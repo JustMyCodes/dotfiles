@@ -8,17 +8,34 @@ local wezterm = require( "wezterm" )
 local config = wezterm.config_builder()
 
 
--- CONFIGURAÇÕES
+-- DEFINE SHELL
+-- Detecta Sistema Operacional
+local is_windows = wezterm.target_triple:find("windows") ~= nil
+
+if is_windows then
+    -- Windows: Usar PowerShell
+    config.default_prog = { 'powershell.exe', '-NoLogo' }
+    
+    -- ALTERNATIVAS
+    -- config.default_prog = { 'pwsh.exe', '-NoLogo' }           -- PowerShell 7+
+    -- config.default_prog = { 'cmd.exe' }
+else
+    -- Linux
+    config.default_prog = { '/bin/bash' }
+end
+
+
+-- CONFIGURA TELA
 -- Cores e Janela ------------------------------------------------------
 -- config.color_scheme_dirs = { 'just-my-nord-deep/wezterm/colors' }
-confif.color_scheme = 'Just My Nord Deep Night'     -- O TOML deve estar em $HOME/.config/wezterm/colors
+config.color_scheme = 'Just My Nord Deep Night'     -- O TOML deve estar em $HOME/.config/wezterm/colors
 config.window_background_opacity = 0.90
 config.enable_tab_bar = false                       -- Remove a barra de abas para visual mais limpo
-config.window_decorations = 'NONE'                  -- Usar NONE ou RESIZE para desativar a barra de título
+config.window_decorations = 'RESIZE'                -- Usar NONE ou RESIZE para desativar a barra de título
 
 -- Fonte ---------------------------------------------------------------
 config.font = wezterm.font( 'MesloLGM Nerd Font Mono' )
-config.font_size = 13
+config.font_size = 10
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }     -- Desabilita legatures da Fonte
 
 
