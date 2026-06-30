@@ -27,9 +27,10 @@ end
 
 -- CONFIGURA TELA
 -- Cores e Janela ------------------------------------------------------
--- config.color_scheme_dirs = { 'just-my-nord-deep/wezterm/colors' }
-config.color_scheme = 'Just My Nord Deep Night'     -- O TOML deve estar em $HOME/.config/wezterm/colors
-config.window_background_opacity = 0.90
+--config.color_scheme = 'SeaShells'
+--config.color_scheme = 'Solarized Dark Higher Contrast'
+config.color_scheme = 'Navy and Ivory (terminal.sexy)'
+config.window_background_opacity = 0.93
 config.enable_tab_bar = false                       -- Remove a barra de abas para visual mais limpo
 config.window_decorations = 'RESIZE'                -- Usar NONE ou RESIZE para desativar a barra de título
 
