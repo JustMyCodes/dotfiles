@@ -4,25 +4,16 @@
 -- Importa a API do WezTem
 local wezterm = require( "wezterm" )
 
+-- CARREGA MÓDULO ESPECÍFICO PARA USO EM WINDOWS
+-- local wezterm_windows = require("wezterm_windows")
+
 -- Cria objeto de configuração
 local config = wezterm.config_builder()
 
 
--- DEFINE SHELL
--- Detecta Sistema Operacional
-local is_windows = wezterm.target_triple:find("windows") ~= nil
-
-if is_windows then
-    -- Windows: Usar PowerShell
-    config.default_prog = { 'powershell.exe', '-NoLogo' }
-    
-    -- ALTERNATIVAS
-    -- config.default_prog = { 'pwsh.exe', '-NoLogo' }           -- PowerShell 7+
-    -- config.default_prog = { 'cmd.exe' }
-else
-    -- Linux
-    config.default_prog = { '/bin/bash' }
-end
+-- WINDOWS: descomente as duas linhas abaixo apenas em máquinas Windows
+-- wezterm_windows.shell(config)           -- PowerShell como shell padrão
+-- wezterm_windows.bg()                    -- Fundo dinâmico sincronizado com o Neovim
 
 
 -- CONFIGURA TELA
@@ -42,4 +33,3 @@ config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }     -- Desabilita le
 
 -- Retorna o objeto de configuração ao WezTerm
 return config
-
