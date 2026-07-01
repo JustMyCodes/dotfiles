@@ -39,7 +39,7 @@ aplica no fundo. A configuração correspondente está em
 
 ## ✅ Pré-requisitos
 
-- [*vim-plug*](https://www.nerdfonts.com/font-downloads) - Gerencia a instalação de plugins
+- [*vim-plug*](https://github.com/junegunn/vim-plug) - Gerencia a instalação de plugins
 - [*Nerd Font*](https://www.nerdfonts.com/font-downloads) - Recomendado para uso de ícones e símbolos gráficos
 - Terminal com suporte a **true color** (ex: WezTerm)
 
