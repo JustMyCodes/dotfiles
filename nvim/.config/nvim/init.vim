@@ -25,6 +25,7 @@ set nu               " Habilita a numeração das linhas
 set cursorline       " Destaca a linha onde o cursor está localizado
 set mouse=a          " Habilita uso do mouse
 set relativenumber
+set statuscolumn=%s%{v:lnum==line('.')?printf('%-5d',v:lnum):printf('%5d',v:relnum)}\ \ \ \ 
 
 " ----------------------------- Comportamento do Buffer
 set hidden           " Permite ocultar o buffer atual ao abrir um novo arquivo
@@ -73,42 +74,41 @@ set nobackup         " Desabilita a criação de arquivos de backup
 set nowritebackup    " Desabilita a criação de backups de gravação
 
 " ----------------------------- Tipos de Arquivos e Plugins
-filetype on " Detecta tipo de arquivo
-filetype plugin on " Habilita plugins específicos para o tipo de arquivo detectado
-filetype indent on "Habilita regras de indentação específicas para o tipo de arquivo
+filetype on          " Detecta tipo de arquivo
+filetype plugin on   " Habilita plugins específicos para o tipo de arquivo detectado
+filetype indent on   "Habilita regras de indentação específicas para o tipo de arquivo
 
 " ----------------------------- Outras Configurações
-set laststatus=2     " Exibe a barra de status com informações adicionais
-set nowrap           " Desativa a quebra automática de linhas
-set clipboard=unnamedplus " habilita a área de transferência entre o Vim/Neovim e os demais programas do sistema.
+set laststatus=2            " Exibe a barra de status com informações adicionais
+set nowrap                  " Desativa a quebra automática de linhas
+set clipboard=unnamedplus   " habilita a área de transferência entre o Vim/Neovim e os demais programas do sistema.
 set completeopt=noinsert,menuone,noselect " Modifica o comportamento do menu de auto-completar
-set ttimeoutlen=0 " Tempo em milissegundos para aceitar comandos.
+set ttimeoutlen=0           " Tempo em milissegundos para aceitar comandos.
 
 
 " TEMA NORD ############################################################################################################
-"(Configuração de temas)
+" Configuração de tema
 
 "Para o tema Nord, todas as variáveis de configuração devem ser definidas antes do colorscheme!
-set noshowmode " É desnecessário (redundânte) que os modos vim apareçam com o light habilidato
-let g:nord_cursor_line_number_background = 1 " Background da linha estende-se até a barra com o número da linha
-let g:nord_italic = 1 " Habilita Itálico
-let g:nord_italic_comments = 1 " Habilita comentários em Itálico
+set noshowmode                                  " É desnecessário (redundânte) que os modos vim apareçam com o light habilidato
+let g:nord_cursor_line_number_background = 1    " Background da linha estende-se até a barra com o número da linha
+let g:nord_italic = 1                           " Habilita Itálico
+let g:nord_italic_comments = 1                  " Habilita comentários em Itálico
 
-colorscheme nord " Ativa tema Nord
-hi Normal guibg=#0f1520
+colorscheme nord                                " Ativa tema Nord
+
+
+" AJUSTE DE COR ##############################################################################################################
+hi Normal guibg=#0f1520                         " Altera cor do background
+highlight SignColumn guibg=#0f1520              " Altera cor da barra lateral esquerda de singcolumn
+highlight ColorColumn guibg=#151b26
+highlight CursorLine guibg=#151b26
+highlight CursorLineNr guibg=#151b26
 
 " AIRLINE ##############################################################################################################
 " Define o tema Nord da barra de status
 let g:airline_theme='nord'
-let g:airline#extensions#tabline#enabled = 1 " Habilita o Airline para a barra de abas
-"let g:airline_powerline_fonts = 1 " Linhas com formas de setas
-
-
-" REMAPS ###############################################################################################################
-" (Configurações de atalhos no teclado)
-
-
-" AUTOCMD ##############################################################################################################
-" (Tarefas que são automaticamente ativadas)
-
+let g:airline#extensions#tabline#enabled = 1                        " Habilita o Airline para a barra de abas
+let g:airline_powerline_fonts = 1                                   " Linhas com formas de setas
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved' " Controla como os nomes dos buffers aparecem na tabline
 
