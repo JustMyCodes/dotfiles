@@ -12,13 +12,13 @@ call plug#end()
 
 " GLOBAL SETS ##########################################################################################################
 " ----------------------------- Configurações Gerais
-filetype plugin indent on " Adicionar suporte à sintaxe automática para os arquivos abertos junto com syntax on
-syntax on            " Habilita o destaque de sintaxe
-set t_Co=256         " Habilitar 256 cores no terminal
-set encoding=utf-8   " Define a codificação do arquivo como UTF-8 (necessário para ícones de fontes)
-set title            " Exibe o título do arquivo na barra de título
-set updatetime=100   " Define o tempo em milissegundos para considerar mudanças no arquivo (útil para autocompletar)
-set autoread         " Atualizar arquivo após atualização de arquivo do lado de fora
+filetype plugin indent on   " Adicionar suporte à sintaxe automática para os arquivos abertos junto com syntax on
+syntax on                   " Habilita o destaque de sintaxe
+set t_Co=256                " Habilitar 256 cores no terminal
+set encoding=utf-8          " Define a codificação do arquivo como UTF-8 (necessário para ícones de fontes)
+set title                   " Exibe o título do arquivo na barra de título
+set updatetime=100          " Define o tempo em milissegundos para considerar mudanças no arquivo (útil para autocompletar)
+set autoread                " Atualizar arquivo após atualização de arquivo do lado de fora
 
 " ----------------------------- Numeração e Linha de Cursor
 set nu               " Habilita a numeração das linhas
@@ -50,16 +50,16 @@ set smarttab         " Insere tabs no início de uma linha de acordo com o shift
 set smartindent      " Insere automaticamente um nível extra de indentação em algumas situações
 
 " ----------------------------- Configurações de Janela e Layout
-set scrolloff=8      " Define o número mínimo de linhas a serem mantidas acima e abaixo do cursor
+set scrolloff=8             " Define o número mínimo de linhas a serem mantidas acima e abaixo do cursor
 set colorcolumn=72,80,120   " Desenha linhas auxiliares nas colunas especificadas para controle do comprimento da linha
-set signcolumn=yes   " Habilita uma coluna extra à esquerda, útil para linting (exibição de sinais como erros e avisos)
-set cmdheight=2      " Aumenta a altura da linha de comandos para exibir mais mensagens de status
+set signcolumn=yes          " Habilita uma coluna extra à esquerda, útil para linting (exibição de sinais como erros e avisos)
+set cmdheight=2             " Aumenta a altura da linha de comandos para exibir mais mensagens de status
 " configura o comportamento da divisão da tela com o comando
 " :split (dividir a tela horizontalmente) e :vsplit (verticalmente).
 set splitbelow splitright
-set wildmenu " Mostra um menu mais avançado para sugestões de auto-completar.
-set inccommand=split " Mostra substituições em uma divisão da janela, antes de aplicar no arquivo.
-set termguicolors    " Habilita cores 24 bits. Permite maior precisão de cores.
+set wildmenu                " Mostra um menu mais avançado para sugestões de auto-completar.
+set inccommand=split        " Mostra substituições em uma divisão da janela, antes de aplicar no arquivo.
+set termguicolors           " Habilita cores 24 bits. Permite maior precisão de cores.
 
 " ----------------------------- Configurações de Undo
 set undofile         " Habilita o recurso de desfazer persistente, mantendo o histórico de alterações
@@ -76,14 +76,21 @@ set nowritebackup    " Desabilita a criação de backups de gravação
 " ----------------------------- Tipos de Arquivos e Plugins
 filetype on          " Detecta tipo de arquivo
 filetype plugin on   " Habilita plugins específicos para o tipo de arquivo detectado
-filetype indent on   "Habilita regras de indentação específicas para o tipo de arquivo
+filetype indent on   " Habilita regras de indentação específicas para o tipo de arquivo
 
 " ----------------------------- Outras Configurações
 set laststatus=2            " Exibe a barra de status com informações adicionais
 set nowrap                  " Desativa a quebra automática de linhas
-set clipboard=unnamedplus   " habilita a área de transferência entre o Vim/Neovim e os demais programas do sistema.
 set completeopt=noinsert,menuone,noselect " Modifica o comportamento do menu de auto-completar
-set ttimeoutlen=0           " Tempo em milissegundos para aceitar comandos.
+set ttimeoutlen=0           " Tempo em milissegundos para aceitar comandos
+
+" ----------------------------- Clipboard (multiplataforma)
+" Habilita a área de transferência entre o Vim/Neovim e os demais programas do sistema
+if has('unnamedplus')
+    set clipboard=unnamedplus,unnamed   " Linux/X11
+elseif has('clipboard')
+    set clipboard=unnamed               " Windows e macOS
+endif
 
 
 " TEMA NORD ############################################################################################################
