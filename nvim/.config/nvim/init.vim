@@ -62,11 +62,27 @@ set inccommand=split        " Mostra substituições em uma divisão da janela, 
 set termguicolors           " Habilita cores 24 bits. Permite maior precisão de cores.
 
 " ----------------------------- Configurações de Undo
-set undofile         " Habilita o recurso de desfazer persistente, mantendo o histórico de alterações
-if !isdirectory(expand("$HOME/.vim/undodir"))
-    call mkdir(expand("$HOME/.vim/undodir"), "p")
+" Mantém o histórico de desfazer entre sessões, salvando-o em um diretório
+" próprio para cada editor (Vim ou Neovim), evitando conflito de formato
+" (E824) e funcionando em Linux, macOS e Windows.
+set undofile
+
+if has('nvim')
+    " Neovim: usa o diretório de dados padrão da plataforma
+        " Linux:   ~/.local/share/nvim/undo
+        " Windows: %LOCALAPPDATA%\nvim-data\undo
+    let s:undodir = stdpath('data') . '/undo'
+else
+    " Vim: usa ~/.vim/undodir
+    let s:undodir = expand('~/.vim/undodir')
 endif
-set undodir=$HOME/.vim/undodir
+
+" Cria o diretório se não existir (com permissão restrita ao usuário)
+if !isdirectory(s:undodir)
+    call mkdir(s:undodir, 'p', 0700)
+endif
+
+let &undodir = s:undodir
 
 " ----------------------------- Confirmação e Segurança
 set confirm          " Exibe uma mensagem de confirmação ao tentar sair sem salvar as alterações
