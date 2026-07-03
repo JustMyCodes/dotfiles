@@ -50,7 +50,7 @@ set smarttab         " Insere tabs no início de uma linha de acordo com o shift
 set smartindent      " Insere automaticamente um nível extra de indentação em algumas situações
 
 " ----------------------------- Configurações de Janela e Layout
-set scrolloff=8             " Define o número mínimo de linhas a serem mantidas acima e abaixo do cursor
+set scrolloff=11            " Define o número mínimo de linhas a serem mantidas acima e abaixo do cursor
 set colorcolumn=72,80,120   " Desenha linhas auxiliares nas colunas especificadas para controle do comprimento da linha
 set signcolumn=yes          " Habilita uma coluna extra à esquerda, útil para linting (exibição de sinais como erros e avisos)
 set cmdheight=2             " Aumenta a altura da linha de comandos para exibir mais mensagens de status
