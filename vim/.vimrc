@@ -6,6 +6,7 @@ set encoding=utf-8          " Define a codificação do arquivo como UTF-8 (nece
 set title                   " Exibe o título do arquivo na barra de título
 set updatetime=100          " Define o tempo em milissegundos para considerar mudanças no arquivo (útil para autocompletar)
 set autoread                " Atualizar arquivo após atualização de arquivo do lado de fora
+set showmode                " Exibe o modo de operação atual na parte inferior da tela
 
 " ----------------------------- Numeração e Linha de Cursor
 set nu               " Habilita a numeração das linhas
@@ -35,7 +36,7 @@ set expandtab        " Substitui a tecla Tab por espaços
 set autoindent       " Copia a indentação da linha anterior
 
 " ----------------------------- Configurações de Janela e Layout
-set scrolloff=11             " Define o número mínimo de linhas a serem mantidas acima e abaixo do cursor
+set scrolloff=11            " Define o número mínimo de linhas a serem mantidas acima e abaixo do cursor
 set cmdheight=2             " Aumenta a altura da linha de comandos para exibir mais mensagens de status
     " configura o comportamento da divisão da tela com o comando
     " :split (dividir a tela horizontalmente) e :vsplit (verticalmente)
@@ -69,6 +70,6 @@ elseif has('clipboard')
 endif
 
 " ----------------------------- Configuração de Cores
-colorscheme default
-:hi CursorLine ctermbg=1
-:hi CursorLineNr ctermbg=1
+set background=dark         " Linux, Windows e WSL podem assumir bg diferentes. Deixar definido resolve.
+hi CursorLine ctermbg=1
+hi CursorLineNr ctermbg=1
