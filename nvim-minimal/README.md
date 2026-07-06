@@ -1,5 +1,6 @@
 # nvim
 Just my [Neovim](https://neovim.io) Configuration.
+Essa é uma configuração mínima escrita em VimScript que pode ser usada tanto no neovim como no vim.
 
 | Arquivo | Destino (symlink/stow) |
 |---|---|
