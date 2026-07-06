@@ -22,6 +22,8 @@ local config = wezterm.config_builder()
 --config.color_scheme = 'Solarized Dark Higher Contrast'
 config.color_scheme = 'Navy and Ivory (terminal.sexy)'
 --config.window_background_opacity = 0.97
+config.initial_cols = 120                           -- Configura o tamanho inicial da janela
+config.initial_rows = 28
 config.enable_tab_bar = false                       -- Remove a barra de abas para visual mais limpo
 config.window_decorations = 'RESIZE'                -- Usar NONE ou RESIZE para desativar a barra de título
 
