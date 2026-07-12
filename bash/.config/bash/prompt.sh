@@ -1,15 +1,8 @@
+# =====================================================================
+# IMPLEMENTA CABEÇALHO E PROMPT LIMPO PARA USO NO BASH
+# =====================================================================
 
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	color_prompt=yes
-    else
-	color_prompt=
-    fi
-fi
-
-# ============================================
-#  Prompt: cabeçalho contextual + prompt limpo
-# ============================================
+color_prompt=yes
 
 # ---- Cabeçalho user@host (uma vez + após clear)
 __print_header() {
@@ -27,8 +20,9 @@ clear() {
     __print_header
 }
 
-# Ctrl+L também reimprime o cabeçalho
-bind -x '"\C-l": command clear; __print_header' 2>/dev/null
+# Ctrl+L executa 'clear'
+bind '"\C-l": "\C-a\C-k clear\C-m\C-y"' 2>/dev/null
+
 
 # Carrega a função __git_ps1 (se existir)
 if [ -f /usr/lib/git-core/git-sh-prompt ]; then
@@ -40,6 +34,7 @@ GIT_PS1_SHOWDIRTYSTATE=1      # * = modificado, + = staged
 GIT_PS1_SHOWUNTRACKEDFILES=1  # % = arquivos não rastreados
 GIT_PS1_SHOWUPSTREAM=auto     # < atrás, > à frente, <> divergiu, = sincronizado
 
+# Define cores e símbolos
 __my_git_ps1() {
     local out
     out=$(__git_ps1 " [  %s ]")
@@ -65,10 +60,6 @@ __my_git_ps1() {
 }
 
 
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[36m\]\w\[\033[00m\]$(__my_git_ps1)\n\[\033[01;30m\]\$ \[\033[00m\]'
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(__git_ps1 " (%s)")\n\$ '
-fi
-unset color_prompt force_color_prompt
-
+# PS1
+# Substitua \[\033[01;32m\] por 31m para o usuário root
+PS1='${debian_chroot:+($debian_chroot)}\[\033[36m\] \w\[\033[00m\]$(__my_git_ps1)\n\[\033[01;32m\]\$ \[\033[00m\]'
