@@ -57,6 +57,12 @@ O root possui `.bashrc` próprio e não herda a configuração do usuário.
 sudo mkdir -p /root/.config/bash
 sudo install -o root -g root -m 644 ~/.config/bash/prompt.sh /root/.config/bash/prompt.sh
 ```
+ou
+```bash
+sudo mkdir -p /root/.config/bash
+sudo cp ~/dotfiles/bash/.config/bash/prompt.sh /root/.config/bash/prompt.sh
+sudo chown root:root /root/.config/bash/prompt.sh
+```
 
 **2. Adicione ao final de `/root/.bashrc`:**
 
