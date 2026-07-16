@@ -127,7 +127,7 @@ Adicione isto ao seu `.bashrc` para sempre trabalhar dentro de uma sessão do Tm
 # Inicia/anexa ao tmux automaticamente em shells Bash interativos
 if [[ $- == *i* ]] && command -v tmux &>/dev/null; then
   if [[ $TERM != "screen" && $TERM != "screen-256color" ]]; then
-    tmux attach-session -t default 2>/dev/null || tmux new-session -s MAIN
+    tmux attach-session -t MAIN 2>/dev/null || tmux new-session -s MAIN
     exit
   fi
 fi
