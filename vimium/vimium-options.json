@@ -1,0 +1,4 @@
+{
+  "keyMappings": "# ========================================================================== #\n# Essa configuração tenta se aproximar dos atalhos definidos em meu teclado pessoal, vim e tmux  #\n# ========================================================================== #\n\n# Navegação entre abas (equivalente a n/m do tmux para next/previous window)\nunmap J\nunmap K\nmap n previousTab\nmap m nextTab\n\n# Reordenar abas (equivalente ao swap-window M-n / M-m)\nmap <a-home> moveTabLeft\nmap <a-end> moveTabRight\n\n# Criar, fechar e restaurar aba\nunmap t\nmap t restoreTab\nunmap X\nunmap x\nmap X removeTab\nmap c createTab\nmap C createTab\n\n# Navegar no histórico da aba\nunmap H\nunmap L\nmap N goBack\nmap M goForward\n\n# ============================================================================ #",
+  "settingsVersion": "2.4.2"
+}
