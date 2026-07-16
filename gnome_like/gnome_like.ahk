@@ -1,11 +1,13 @@
 ; ============================================================
 ;  Áreas de trabalho estilo GNOME/Linux (AutoHotkey v2)
 ;  Funções:
-;    1) Ctrl+Shift+Alt+Seta     -> move a JANELA ativa para a área vizinha (+ segue)
-;    2) Criação dinâmica        -> uma nova área é criada sob demanda
-;    3) Win+Ctrl+Seta           -> navega entre as áreas (padrão do Windows);
+;    1) Ctrl+Shift+Alt+Seta       -> move a JANELA ativa para a área vizinha (+ segue)
+;    2) Criação dinâmica          -> uma nova área é criada sob demanda
+;    3) Win+Alt+Seta              -> navega entre as áreas (estilo Linux);
 ;                                  na ÚLTIMA área, seta p/ direita CRIA uma nova.
-;    4) Remoção dinâmica        -> ao SAIR de uma área VAZIA, ela é excluída.
+;    4) Remoção dinâmica          -> ao SAIR de uma área VAZIA, ela é excluída.
+;    5) Foco no monitor principal -> ao navegar, a janela inicialmente focada
+;                                   é a do MONITOR PRINCIPAL (se existir).
 ;    * Novas áreas são nomeadas automaticamente como "WORKSPACE N" (N = número 1-based).
 ;    * Rotina ANTI-FLASH: após cada troca de área, cancela o piscar (vermelho) APENAS
 ;      dos ícones que realmente estão piscando, sem perturbar a barra de tarefas.
@@ -26,6 +28,7 @@ kWrapDesktops    := false          ; função 1: cria nova área ao passar do fi
 kNamePrefix      := "WORKSPACE "   ; novas áreas recebem  <prefixo><N>  ex.: "WORKSPACE 3"
 kAntiFlash       := true           ; true = cancela o piscar dos ícones após trocar de área
 kAutoRemoveEmpty := true           ; true = ao sair de uma área VAZIA, exclui-a
+kFocusPrimaryMonitor := true       ; true = ao navegar, foca a janela do MONITOR PRINCIPAL da área de destino
 
 ; ------------------------------------------------------------
 ; Carrega a VirtualDesktopAccessor.dll
@@ -157,9 +160,7 @@ StopFlashingSelectively() {
             continue
         StopFlashOne(hwnd)
     }
-    ; Reafirma o foco na janela ativa da área atual. Isso sinaliza à shell que
-    ; não há mais "pedido de atenção" pendente, permitindo que a barra de tarefas
-    ; com auto-hide recolha sozinha (sem precisar clicar em cada ícone).
+    ; Reafirma o estado auto-hide da barra de tarefas (ver função abaixo).
     ForceTaskbarAutoHide()
 }
 
@@ -167,17 +168,27 @@ StopFlashingSelectively() {
 ; SHAppBarMessage(ABM_SETSTATE, ABS_AUTOHIDE). Isso limpa o estado "auto-hide
 ; desativado temporariamente" que o Windows aciona quando algo pede atenção,
 ; sem precisar clicar no Iniciar/ícones.
+; MULTI-MONITOR: aplica à barra do monitor principal (Shell_TrayWnd) E a TODAS
+; as barras dos monitores secundários (Shell_SecondaryTrayWnd), pois cada
+; monitor tem sua própria janela de barra de tarefas.
 ;   ABM_SETSTATE = 0x0000000A ; ABS_AUTOHIDE = 0x0000000001
 ForceTaskbarAutoHide() {
+    ; barra principal
+    hTray := WinExist("ahk_class Shell_TrayWnd")
+    if (hTray)
+        SetAppBarAutoHide(hTray)
+    ; barras dos monitores secundários (pode haver mais de uma)
+    for hSec in WinGetList("ahk_class Shell_SecondaryTrayWnd")
+        SetAppBarAutoHide(hSec)
+}
+
+; Envia ABM_SETSTATE/ABS_AUTOHIDE para uma janela de barra específica.
+SetAppBarAutoHide(hTray) {
     static ABM_SETSTATE := 0x0A
     static ABS_AUTOHIDE := 0x01
-    hTray := WinExist("ahk_class Shell_TrayWnd")
-    if !hTray
-        return
     ; struct APPBARDATA:
     ;   DWORD cbSize; HWND hWnd; UINT uCallbackMessage; UINT uEdge;
     ;   RECT rc (4x LONG); LPARAM lParam
-    ; Tamanho: x64 -> alinhado; usamos 48 bytes com folga.
     size := (A_PtrSize = 8) ? 48 : 36
     abd := Buffer(size, 0)
     off := 0
@@ -187,11 +198,9 @@ ForceTaskbarAutoHide() {
     NumPut("Ptr",  hTray, abd, off), off += A_PtrSize  ; hWnd
     NumPut("UInt", 0,     abd, off), off += 4          ; uCallbackMessage
     NumPut("UInt", 0,     abd, off), off += 4          ; uEdge
-    ; rc (16 bytes) fica zerada; em seguida o lParam:
-    off += 16
-    ; alinhamento do LPARAM (ptr-size) em x64
+    off += 16                                          ; rc (16 bytes) zerada
     if (A_PtrSize = 8 && Mod(off, 8) != 0)
-        off += 8 - Mod(off, 8)
+        off += 8 - Mod(off, 8)                         ; alinhamento do LPARAM em x64
     NumPut("Ptr", ABS_AUTOHIDE, abd, off)              ; lParam = ABS_AUTOHIDE
     try DllCall("shell32\SHAppBarMessage", "UInt", ABM_SETSTATE, "Ptr", abd.Ptr, "Ptr")
 }
@@ -199,7 +208,6 @@ ForceTaskbarAutoHide() {
 ; ------------------------------------------------------------
 ; Contagem de janelas por área (para detectar área vazia)
 ; ------------------------------------------------------------
-; Conta as janelas "reais" (visíveis, com título, não tool windows) numa área (0-based).
 CountWindowsOnDesktop(idx) {
     if !VdaFunc("GetWindowDesktopNumber")
         return -1                      ; -1 = não dá para saber (DLL sem a função)
@@ -230,10 +238,7 @@ CountWindowsOnDesktop(idx) {
     return n
 }
 
-; ------------------------------------------------------------
-; Renomeia todas as áreas para "WORKSPACE N" (usado após remover uma área,
-; para os nomes ficarem coerentes com a nova numeração).
-; ------------------------------------------------------------
+; Renomeia todas as áreas para "WORKSPACE N" (usado após remover uma área).
 RenameAllDesktops() {
     global kNamePrefix
     if !VdaFunc("SetDesktopName")
@@ -257,12 +262,9 @@ CreateNamedDesktop() {
 ; ------------------------------------------------------------
 ; Troca de área com ANTI-FLASH e REMOÇÃO DINÂMICA da área vazia de origem
 ; ------------------------------------------------------------
-; from/to são índices 0-based. Se a área de origem ficar vazia, ela é removida
-; depois da troca (respeitando kAutoRemoveEmpty e mantendo ao menos 1 área).
 GoToDesktopSilently(to, from := -1) {
     global kAutoRemoveEmpty
 
-    ; decide se a área de origem deve ser removida (estava vazia?)
     removeFrom := false
     if (kAutoRemoveEmpty && from >= 0 && from != to && GetDesktopCount() > 1) {
         cnt := CountWindowsOnDesktop(from)
@@ -285,8 +287,72 @@ GoToDesktopSilently(to, from := -1) {
     SetTimer(StopFlashingSelectively, -60)
     SetTimer(StopFlashingSelectively, -180)
     SetTimer(StopFlashingSelectively, -350)
-    ; passe final: garante que a taskbar recolha mesmo após remoção/renomeação
+    ; foca a janela do monitor principal da área de destino (após a transição)
+    SetTimer(() => FocusPrimaryMonitorWindow(to), -120)
+    ; passes finais: garantem que TODAS as barras (multi-monitor) recolham,
+    ; mesmo quando o efeito de acordar chega atrasado
     SetTimer(ForceTaskbarAutoHide, -400)
+    SetTimer(ForceTaskbarAutoHide, -700)
+}
+
+
+; ------------------------------------------------------------
+; Foco no MONITOR PRINCIPAL após a navegação
+; ------------------------------------------------------------
+; Retorna true se a janela está (majoritariamente) no monitor principal.
+IsWindowOnPrimaryMonitor(hwnd) {
+    static MONITOR_DEFAULTTONEAREST := 2
+    try hMon := DllCall("user32\MonitorFromWindow", "Ptr", hwnd, "UInt", MONITOR_DEFAULTTONEAREST, "Ptr")
+    catch
+        return false
+    if !hMon
+        return false
+    ; MONITORINFO: DWORD cbSize; RECT rcMonitor; RECT rcWork; DWORD dwFlags
+    mi := Buffer(40, 0)
+    NumPut("UInt", 40, mi, 0)
+    if !DllCall("user32\GetMonitorInfoW", "Ptr", hMon, "Ptr", mi.Ptr)
+        return false
+    return (NumGet(mi, 36, "UInt") & 1)    ; dwFlags & MONITORINFOF_PRIMARY
+}
+
+; Ativa a janela mais alta (ordem Z) do MONITOR PRINCIPAL na área 'idx'.
+; Se não houver nenhuma no principal, não faz nada (comportamento nativo).
+FocusPrimaryMonitorWindow(idx) {
+    global kFocusPrimaryMonitor
+    if !kFocusPrimaryMonitor
+        return
+    if !VdaFunc("GetWindowDesktopNumber")
+        return
+    ; WinGetList retorna em ordem Z (a primeira é a mais alta)
+    for hwnd in WinGetList() {
+        if !DllCall("IsWindowVisible", "ptr", hwnd, "int")
+            continue
+        try title := WinGetTitle("ahk_id " hwnd)
+        catch
+            continue
+        if (title = "")
+            continue
+        try exStyle := WinGetExStyle("ahk_id " hwnd)
+        catch
+            continue
+        if (exStyle & 0x00000080)      ; WS_EX_TOOLWINDOW
+            continue
+        try cls := WinGetClass("ahk_id " hwnd)
+        catch
+            continue
+        if (cls = "Progman" || cls = "WorkerW"
+            || cls = "Shell_TrayWnd" || cls = "Shell_SecondaryTrayWnd"
+            || cls = "NotifyIconOverflowWindow")
+            continue
+        if (GetWindowDesktopNumber(hwnd) != idx)
+            continue
+        if !IsWindowOnPrimaryMonitor(hwnd)
+            continue
+        ; achou a janela mais alta do monitor principal nesta área -> ativa
+        try WinActivate("ahk_id " hwnd)
+        return
+    }
+    ; nenhuma janela no monitor principal -> mantém o comportamento nativo
 }
 
 ; ------------------------------------------------------------
@@ -297,7 +363,6 @@ EnsureDesktopIndex(idx) {                 ; garante áreas até o índice (0-bas
         CreateNamedDesktop()
 }
 
-; Índice da área vizinha numa direção; cria uma área ao passar do fim (dinâmico).
 NeighborIndex(dir) {
     count := GetDesktopCount()
     curr  := GetCurrentDesktopNumber()    ; 0-based
@@ -316,8 +381,6 @@ NeighborIndex(dir) {
 }
 
 ; (1) Move a janela ativa para a área vizinha e segue junto.
-;     (não remove a área de origem: acabamos de colocar uma janela na de destino,
-;      e a de origem pode ou não ficar vazia; a remoção acontece na NAVEGAÇÃO)
 MoveActiveNeighbor(dir) {
     hwnd := WinExist("A")
     if !hwnd
@@ -327,7 +390,7 @@ MoveActiveNeighbor(dir) {
     GoToDesktopSilently(target)           ; sem 'from' -> não tenta remover origem aqui
 }
 
-; (3) Navegação Win+Ctrl+Seta; na última área, a seta p/ direita CRIA (e nomeia) uma nova.
+; (3) Navegação Win+Alt+Seta; na última área, a seta p/ direita CRIA (e nomeia) uma nova.
 ;     Ao sair, se a área atual estiver VAZIA, ela é removida (remoção dinâmica).
 SwitchDesktop(dir) {
     count := GetDesktopCount()
@@ -354,6 +417,6 @@ SwitchDesktop(dir) {
 ^+!Right::MoveActiveNeighbor(1)
 ^+!Down::MoveActiveNeighbor(1)
 
-; (3) Win+Alt+Seta -> navega entre as áreas (padrão do Linux); direita no fim cria uma nova.
-#!Left::SwitchDesktop(-1)    ; Win+Alt+Left  (# = Win, ! = Alt)
-#!Right::SwitchDesktop(1)    ; Win+Alt+Right
+; (3) Win+Alt+Seta -> navega entre as áreas (estilo Linux); direita no fim cria uma nova.
+#!Left::SwitchDesktop(-1)
+#!Right::SwitchDesktop(1)
