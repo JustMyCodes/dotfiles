@@ -4,6 +4,9 @@
 -- Importa a API do WezTem
 local wezterm = require( "wezterm" )
 
+-- Cria um atalho para o módulo multiplexer do WezTerm
+local mux = wezterm.mux
+
 -- CARREGA MÓDULO ESPECÍFICO PARA USO EM WINDOWS
 -- local wezterm_windows = require("wezterm_windows")
 
@@ -14,6 +17,21 @@ local config = wezterm.config_builder()
 -- WINDOWS: descomente as duas linhas abaixo apenas em máquinas Windows
 -- wezterm_windows.shell(config)           -- PowerShell como shell padrão
 -- wezterm_windows.bg()                    -- Fundo dinâmico sincronizado com o Neovim
+
+
+-- Posiciona o teminal ao iniciar
+wezterm.on("gui-startup", function(cmd)
+  local screen = wezterm.gui.screens().active
+  local width = screen.width * 0.5
+  local height = screen.height * 0.5
+
+  local tab, pane, window = mux.spawn_window(cmd or {})
+  window:gui_window():set_position(
+    screen.x + (screen.width - width) / 2,
+    screen.y + (screen.height - height) / 2 - screen.height * 0.08
+  )
+  window:gui_window():set_inner_size(width, height)
+end)
 
 
 -- CONFIGURA TELA
