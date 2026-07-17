@@ -6,7 +6,10 @@ color_prompt=yes
 
 # ---- Cabeçalho user@host (uma vez + após clear)
 __print_header() {
-    echo -e "\033[01;32m${debian_chroot:+($debian_chroot)}$USER@$HOSTNAME\033[00m"
+    local suffix=""
+    [ -n "$WSL_DISTRO_NAME" ] && suffix=" (wsl:$WSL_DISTRO_NAME)"
+
+    echo -e "\033[01;32m${debian_chroot:+($debian_chroot)}$USER@$HOSTNAME\033[00;32m${suffix}\033[00m"
 }
 
 # Imprime só em shells interativos
