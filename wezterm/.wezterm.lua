@@ -7,6 +7,9 @@ local wezterm = require( "wezterm" )
 -- Cria um atalho para o módulo multiplexer do WezTerm
 local mux = wezterm.mux
 
+-- Carrega todas as ações possíveis
+local act = wezterm.action
+
 -- CARREGA MÓDULO ESPECÍFICO PARA USO EM WINDOWS
 -- local wezterm_windows = require("wezterm_windows")
 
@@ -49,6 +52,14 @@ config.window_decorations = 'NONE'                  -- Usar NONE ou RESIZE para 
 config.font = wezterm.font( 'MesloLGM Nerd Font Mono' )
 config.font_size = 13
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }     -- Desabilita legatures da Fonte
+
+-- Teclas ---------------------------------------------------------------
+config.keys = {
+    -- Rolar 1 linha para cima com SHIFT + Seta para cima
+    { key = 'UpArrow', mods = 'ALT', action = act.ScrollByLine(-1) },
+    -- Rolar 1 linha para baixo com SHIFT + Seta para baixo
+    { key = 'DownArrow', mods = 'ALT', action = act.ScrollByLine(1) },
+}
 
 
 -- Retorna o objeto de configuração ao WezTerm
