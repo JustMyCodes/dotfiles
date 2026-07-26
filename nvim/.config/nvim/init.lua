@@ -81,96 +81,18 @@ Espero que você aproveite sua jornada com o Neovim,
 
 P.S. Você também pode apagar isto quando terminar. Agora a configuração é sua! :)
 --]]
+require 'config.options'
+require 'config.keymaps'
 
--- ============================================================
--- SEÇÃO 1: OPÇÕES
--- Configurações principais do Neovim, teclas leader, opções, keymaps básicos, autocmds básicos
--- ============================================================
-do
-  -- Habilita uma inicialização mais rápida armazenando em cache os módulos Lua compilados
-  vim.loader.enable()
+---Como a maioria dos plugins está hospedada no GitHub,
+---a função abaixo permite ter menos repetição.
+---@param repo string
+---@return string
+_G.gh = function(repo) return 'https://github.com/' .. repo end
 
-  -- Define <space> como a tecla leader
-  -- Veja `:help mapleader`
-  --  NOTE: Deve acontecer antes que os plugins sejam carregados (caso contrário, o leader errado será usado)
-  vim.g.mapleader = ' '
-  vim.g.maplocalleader = ' '
+require 'plugins.neo-tree'
+require 'themes.nord'
 
-  -- Defina como true se você tiver uma Nerd Font instalada e selecionada no terminal
-  vim.g.have_nerd_font = true
-
-  -- [[ Definindo opções ]]
-  --  Veja `:help vim.o`
-  -- NOTE: Você pode alterar essas opções como quiser!
-  --  Para mais opções, veja `:help option-list`
-
-  -- Torna os números de linha o padrão
-  vim.o.number = true
-  -- Você também pode adicionar números de linha relativos, para ajudar nos saltos.
-  --  Experimente você mesmo para ver se gosta!
-  vim.o.relativenumber = true
-
-  -- Habilita o modo mouse, pode ser útil para redimensionar splits, por exemplo!
-  vim.o.mouse = 'a'
-
-  -- Não mostra o modo, já que ele já aparece na linha de status
-  vim.o.showmode = false
-
-  -- Sincroniza a área de transferência entre o SO e o Neovim.
-  --  Agenda a configuração para depois de `UiEnter` porque ela pode aumentar o tempo de inicialização.
-  --  Remova esta opção se quiser que a área de transferência do seu SO permaneça independente.
-  --  Veja `:help 'clipboard'`
-  vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
-
-  -- Habilita o break indent
-  vim.o.breakindent = true
-
-  -- Habilita desfazer/refazer alterações mesmo depois de fechar e reabrir um arquivo
-  vim.o.undofile = true
-
-  -- Busca sem diferenciar maiúsculas/minúsculas, A MENOS QUE haja \C ou uma ou mais letras maiúsculas no termo de busca
-  vim.o.ignorecase = true
-  vim.o.smartcase = true
-
-  -- Mantém a signcolumn ativada por padrão
-  vim.o.signcolumn = 'yes'
-
-  -- Diminui o tempo de atualização
-  vim.o.updatetime = 250
-
-  -- Diminui o tempo de espera de sequências mapeadas
-  vim.o.timeoutlen = 300
-
-  -- Configura como novos splits devem ser abertos
-  vim.o.splitright = true
-  vim.o.splitbelow = true
-
-  -- Define como o neovim exibirá certos caracteres de espaço em branco no editor.
-  --  Veja `:help 'list'`
-  --  e `:help 'listchars'`
-  --
-  --  Observe que listchars é definido usando `vim.opt` em vez de `vim.o`.
-  --  Ele é muito semelhante ao `vim.o`, mas oferece uma interface para interagir convenientemente com tabelas.
-  --   Veja `:help lua-options`
-  --   e `:help lua-guide-options`
-  vim.o.list = true
-  vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
-
-  -- Pré-visualiza substituições ao vivo, enquanto você digita!
-  vim.o.inccommand = 'split'
-
-  -- Mostra em qual linha o cursor está
-  vim.o.cursorline = true
-
-  -- Número mínimo de linhas da tela a manter acima e abaixo do cursor.
-  vim.o.scrolloff = 10
-
-  -- se for executada uma operação que falharia por causa de alterações não salvas no buffer (como `:q`),
-  -- em vez disso exibe um diálogo perguntando se você deseja salvar o(s) arquivo(s) atual(is)
-  -- Veja `:help 'confirm'`
-  vim.o.confirm = true
-end
---]] 
 -- ============================================================
 -- SEÇÃO 2: KEYMAPS
 -- keymaps básicos
@@ -328,6 +250,16 @@ local function gh(repo) return 'https://github.com/' .. repo end
 -- guess-indent, gitsigns, which-key, colorscheme, todo-comments, módulos mini
 -- ============================================================
 do
+-- ####################################################################
+
+
+
+
+
+
+
+-- ####################################################################
+
   -- [[ Instalando e Configurando Plugins ]]
   --
   -- Para instalar um plugin, basta chamar `vim.pack.add` com a url git dele.
@@ -380,18 +312,18 @@ do
   -- altere o comando logo abaixo dele para carregar o nome do colorscheme desejado.
   --
   -- Se quiser ver quais colorschemes já estão instalados, você pode usar `:Telescope colorscheme`.
-  vim.pack.add { gh 'folke/tokyonight.nvim' }
-  ---@diagnostic disable-next-line: missing-fields
-  require('tokyonight').setup {
-    styles = {
-      comments = { italic = true }, -- Desabilita o itálico nos comentários
-    },
-  }
+  --vim.pack.add { gh 'folke/tokyonight.nvim' }
+  -- ---@diagnostic disable-next-line: missing-fields
+  -- require('tokyonight').setup {
+  --  styles = {
+  --    comments = { italic = true }, -- Desabilita o itálico nos comentários
+  --  },
+  --}
 
   -- Carregue o colorscheme aqui.
   -- Como muitos outros temas, este possui estilos diferentes, e você pode carregar
   -- qualquer outro, como 'tokyonight-storm', 'tokyonight-moon' ou 'tokyonight-day'.
-  vim.cmd.colorscheme 'tokyonight-night'
+  -- vim.cmd.colorscheme 'tokyonight-night'
 
   -- Destaca todo, notes, etc nos comentários
   vim.pack.add { gh 'folke/todo-comments.nvim' }
