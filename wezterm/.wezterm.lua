@@ -25,8 +25,8 @@ local config = wezterm.config_builder()
 -- Posiciona o teminal ao iniciar
 wezterm.on("gui-startup", function(cmd)
   local screen = wezterm.gui.screens().active
-  local width = screen.width * 0.5
-  local height = screen.height * 0.5
+  local width = screen.width * 0.7
+  local height = screen.height * 0.7
 
   local tab, pane, window = mux.spawn_window(cmd or {})
   window:gui_window():set_position(
@@ -43,8 +43,11 @@ end)
 --config.color_scheme = 'Solarized Dark Higher Contrast'
 config.color_scheme = 'Navy and Ivory (terminal.sexy)'
 --config.window_background_opacity = 0.97
-config.initial_cols = 120                           -- Configura o tamanho inicial da janela
-config.initial_rows = 28
+config.colors = {
+  background = '0f1520'
+}
+--config.initial_cols = 120                           -- Configura o tamanho inicial da janela
+--config.initial_rows = 28
 config.enable_tab_bar = false                       -- Remove a barra de abas para visual mais limpo
 config.window_decorations = 'NONE'                  -- Usar NONE ou RESIZE para desativar a barra de título
 
