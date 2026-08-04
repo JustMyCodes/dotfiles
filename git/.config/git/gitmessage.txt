@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#<tipo>(<escopo opcional>): <descrição curta, no imperativo>
+# LINHA EM BRANCO
+#<corpo opcional: contexto, motivação e detalhes da mudança>
+#<footer(s) opcional(is): Refs #<numero>, BREAKING CHANGE: ..., etc.>
+#
+# ── Tipos ────────────────────────────────────────────────────────────────────
+# feat     → nova funcionalidade para o usuário         (SemVer: MINOR)
+# fix      → correção de bug                            (SemVer: PATCH)
+# docs     → alterações somente na documentação
+# style    → formatação, espaços, ponto e vírgula etc. (sem mudança de lógica)
+# refactor → reestruturação de código que não corrige bug nem adiciona feature
+# perf     → mudança de código que melhora performance
+# test     → adição ou correção de testes
+# build    → mudanças no sistema de build ou em dependências externas
+# ci       → mudanças em arquivos/scripts de integração contínua
+# chore    → tarefas de manutenção que não alteram código-fonte nem testes
+# revert   → reverte um commit anterior
+#
+# ── Breaking change ──────────────────────────────────────────────────────────
+# Indique com "!" logo após tipo/escopo (ex.: feat!:) OU com um footer:
+# BREAKING CHANGE: <descrição da mudança incompatível>
+#
+# ── Referência ao Redmine ────────────────────────────────────────────────────
+# Refs #<numero>   → gera link automático para o item no Redmine
+# ─────────────────────────────────────────────────────────────────────────────

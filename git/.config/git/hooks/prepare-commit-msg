@@ -1,0 +1,27 @@
+#!/bin/bash
+# Executado automaticamente pelo git logo antes de finalizar a mensagem do commit.
+
+# Caminho do arquivo temporário que contém a mensagem do commit.
+COMMIT_MSG_FILE=$1
+
+# Origem da mensagem: "message" (-m/-F), "template" (commit.template),
+# "merge", "squash" ou "commit" (--amend/-c/-C).
+COMMIT_SOURCE=$2
+
+    # Só age quando o commit foi feito via -m/-F.
+    # No fluxo com editor/template, a formatação já é feita manualmente.
+if [ "$COMMIT_SOURCE" = "message" ] || [ "$COMMIT_SOURCE" = "template" ]; then
+    BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+    # Extrai o primeiro número encontrado no nome da branch.
+    # head -1 → garante só um resultado, caso haja mais de um número na branch
+    NUM=$(echo "$BRANCH" | grep -oE '[0-9]+' | head -1)
+
+    # só prossegue se essa referência AINDA NÃO estiver no arquivo
+    # (evita duplicar caso já tenha sido digitado manualmente)
+    if [ -n "$NUM" ] && ! grep -q "Refs #$NUM" "$COMMIT_MSG_FILE"; then
+
+        printf "\nRefs #%s\n" "$NUM" >> "$COMMIT_MSG_FILE"
+    fi
+fi
+
