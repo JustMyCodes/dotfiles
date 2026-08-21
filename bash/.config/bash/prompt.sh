@@ -40,29 +40,30 @@ GIT_PS1_SHOWUPSTREAM=auto     # < atrás, > à frente, <> divergiu, = sincroniza
 # Define cores e símbolos
 __my_git_ps1() {
     local out
-    out=$(__git_ps1 " [  %s ]")
+    out=$(__git_ps1 " %s")
     [ -z "$out" ] && return
 
     # Cores (envoltas em \001/\002 = "largura zero" para o readline)
     local red=$'\001\033[31m\002'
-    local green=$'\001\033[32m\002'
-    local cyan=$'\001\033[37m\002'
-    local magenta=$'\001\033[35m\002'
-    local yellow=$'\001\033[37m\002'   # cor base (branch)
+    local green=$'\001\033[1;30m\002'
+    local yellow=$'\001\033[1;37m\002'
+    local magenta=$'\001\033[1;35m\002'
+    local stash=$'\001\033[35m\002'
+    local base=$'\001\033[32m\002'          # cor base (branch)
     local reset=$'\001\033[00m\002'
 
-    out=${out//\*/${yellow}M${yellow}}          # modificado
-    out=${out//+/${green}A${yellow}}            # staged
-    out=${out//%/${green}U${yellow}}            # untracked
-    out=${out//\$/${magenta} stash${yellow}}    # stash
-    out=${out//</${red} behind${yellow}}        # atrás
-    out=${out//>/${green} ahead${yellow}}       # à frente
-    out=${out//=/${green} 󰓦${yellow}}           # sincronizado
+    out=${out//\*/${yellow}M${base}}        # modificado
+    out=${out//+/${green}A${base}}          # staged
+    out=${out//%/${magenta}U${base}}        # untracked
+    out=${out//\$/${stash} STASH${base}}    # stash
+    out=${out//</${red} ${base}}           # atrás
+    out=${out//>/${green} ${base}}         # à frente
+    out=${out//=/${green} 󰓦${base}}         # sincronizado
 
-    printf '%s%s%s' "$yellow" "$out" "$reset"
+    printf '\n%s%s%s' "$base" "$out" "$reset"
 }
 
 
 # PS1
 # Substitua \[\033[01;32m\] por 31m para o usuário root
-PS1='${debian_chroot:+($debian_chroot)}\[\033[36m\] \w\[\033[00m\]$(__my_git_ps1)\n\[\033[01;32m\]\$ \[\033[00m\]'
+PS1='${debian_chroot:+($debian_chroot)}\[\033[36m\] \w\[\033[00m\]$(__my_git_ps1)\n\[\033[01;32m\]└─\$ \[\033[00m\]'
