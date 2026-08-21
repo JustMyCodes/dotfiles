@@ -113,23 +113,3 @@ Começar do zero (mata o servidor e limpa os sockets)
 tmux kill-server && rm -rf /tmp/tmux-*
 ```
 
-Habilitar plugins (instalar o TPM)
-
-```shell
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-```
-
-## Snippets Úteis
-
-Adicione isto ao seu `.bashrc` para sempre trabalhar dentro de uma sessão do Tmux:
-
-```shell
-# Inicia/anexa ao tmux automaticamente em shells Bash interativos
-if [[ $- == *i* ]] && command -v tmux &>/dev/null; then
-  if [[ $TERM != "screen" && $TERM != "screen-256color" ]]; then
-    tmux attach-session -t MAIN 2>/dev/null || tmux new-session -s MAIN
-    exit
-  fi
-fi
-```
-> Se preferir que o tmux seja iniciado com um nome diferente, troque `MAIN` pelo nome desejado (*default, terminal, home, personal, study*).
