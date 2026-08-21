@@ -17,3 +17,6 @@
       position = "right",
     },
   })
+
+-- Mapeamento de teclas
+vim.keymap.set('n', '\\', ':Neotree toggle<CR>', { desc = 'Abrir/fechar árvore de arquivos' })

@@ -1,86 +1,3 @@
---[[
-
-=====================================================================
-=================== LEIA ISTO ANTES DE CONTINUAR ====================
-=====================================================================
-========                                    .-----.          ========
-========         .----------------------.   | === |          ========
-========         |.-""""""""""""""""""-.|   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
-========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
-========                                                     ========
-=====================================================================
-=====================================================================
-
-O que é o Kickstart?
-
-  Kickstart.nvim *não* é uma distribuição.
-
-  Kickstart.nvim é um ponto de partida para a sua própria configuração.
-    O objetivo é que você possa ler cada linha de código, de cima a baixo, entender
-    o que a sua configuração está fazendo e modificá-la conforme suas necessidades.
-
-    Depois de fazer isso, você pode começar a explorar, configurar e experimentar para
-    tornar o Neovim seu! Isso pode significar deixar o Kickstart do jeito que está por um tempo
-    ou imediatamente dividi-lo em partes modulares. Você decide!
-
-    Se você não sabe nada sobre Lua, recomendo dedicar um tempo para ler
-
-    Depois de entender um pouco mais sobre Lua, você pode usar `:help lua-guide` como
-    referência de como o Neovim integra Lua.
-    - :help lua-guide
-    - (ou a versão HTML): https://neovim.io/doc/user/lua-guide.html
-
-Guia do Kickstart:
-
-  TODO: A primeiríssima coisa que você deve fazer é executar o comando `:Tutor` no Neovim.
-
-    Se você não sabe o que isso significa, digite o seguinte:
-      - <tecla escape>
-      - :
-      - Tutor
-      - <tecla enter>
-
-    (Se você já conhece o básico do Neovim, pode pular esta etapa.)
-
-  Depois de concluir isso, você pode continuar trabalhando **E LENDO** o restante
-  do init.lua do kickstart.
-
-  Em seguida, execute E LEIA `:help`.
-    Isso abrirá uma janela de ajuda com algumas informações básicas
-    sobre como ler, navegar e pesquisar a documentação de ajuda embutida.
-
-    Este deve ser o primeiro lugar a consultar quando você estiver travado ou confuso
-    com alguma coisa. É um dos meus recursos favoritos do Neovim.
-
-    MAIS IMPORTANTE AINDA, fornecemos o keymap "<space>sh" para pesquisar ([s]earch) a documentação de ajuda ([h]elp),
-    o que é muito útil quando você não sabe exatamente o que está procurando.
-
-  Deixei vários comentários `:help X` ao longo do init.lua
-    Eles são dicas de onde encontrar mais informações sobre as configurações,
-    plugins ou recursos do Neovim usados no Kickstart.
-
-   NOTE: Procure por linhas como esta
-
-    Ao longo do arquivo. Elas existem para você, o leitor, para ajudar a entender o que está acontecendo.
-    Sinta-se à vontade para apagá-las quando souber o que está fazendo, mas elas devem servir de guia
-    para quando você encontrar pela primeira vez algumas construções diferentes na sua configuração do Neovim.
-
-Se você encontrar algum erro ao tentar instalar o kickstart, execute `:checkhealth` para mais informações.
-
-Espero que você aproveite sua jornada com o Neovim,
-- TJ
-
-P.S. Você também pode apagar isto quando terminar. Agora a configuração é sua! :)
---]]
 require 'config.options'
 require 'config.keymaps'
 
@@ -153,6 +70,10 @@ do
   vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
   vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
   vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+  -- Navegação entre abas
+  vim.keymap.set('n', '<leader>n', 'gt', { desc = 'Próxima aba' })
+  vim.keymap.set('n', '<leader>m', 'gT', { desc = 'Aba anterior' })
 
   -- NOTE: Alguns terminais têm keymaps conflitantes ou não conseguem enviar keycodes distintos
   -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
