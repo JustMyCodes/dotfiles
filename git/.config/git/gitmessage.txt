@@ -2,7 +2,7 @@
 #<tipo>(<escopo opcional>): <descrição curta, no imperativo>
 # LINHA EM BRANCO
 #<corpo opcional: contexto, motivação e detalhes da mudança>
-#<footer(s) opcional(is): Refs #<numero>, BREAKING CHANGE: ..., etc.>
+#<footer(s) opcional(is): refs #<NUMERO>, BREAKING CHANGE: ..., etc.>
 #
 # ── Tipos ────────────────────────────────────────────────────────────────────
 # feat     → nova funcionalidade para o usuário         (SemVer: MINOR)
@@ -22,5 +22,5 @@
 # BREAKING CHANGE: <descrição da mudança incompatível>
 #
 # ── Referência ao Redmine ────────────────────────────────────────────────────
-# Refs #<numero>   → gera link automático para o item no Redmine
+# refs #<NUMERO>   → gera link automático para o item no Redmine
 # ─────────────────────────────────────────────────────────────────────────────

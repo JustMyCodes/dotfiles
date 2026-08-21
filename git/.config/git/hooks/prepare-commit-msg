@@ -1,27 +1,17 @@
-#!/bin/bash
-# Executado automaticamente pelo git logo antes de finalizar a mensagem do commit.
+#!/bin/sh
 
-# Caminho do arquivo temporário que contém a mensagem do commit.
-COMMIT_MSG_FILE=$1
+# PARÂMETROS PASSADOS PELO GIT
+ARQUIVO_MENSAGEM=$1             # Caminho temporário do arquivo que contém a mensagem de commit
+ORIGEM_MENSAGEM=$2              # "message" (-m/-F), "template", "merge", "squash" ou "commit" (--amend/-c/-C)
 
-# Origem da mensagem: "message" (-m/-F), "template" (commit.template),
-# "merge", "squash" ou "commit" (--amend/-c/-C).
-COMMIT_SOURCE=$2
+if [ "$ORIGEM_MENSAGEM" = "message" ] || [ "$ORIGEM_MENSAGEM" = "template" ]; then
 
-    # Só age quando o commit foi feito via -m/-F.
-    # No fluxo com editor/template, a formatação já é feita manualmente.
-if [ "$COMMIT_SOURCE" = "message" ] || [ "$COMMIT_SOURCE" = "template" ]; then
     BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    NUMERO=$(echo "$BRANCH" | grep -oE '[0-9]+' | head -1)
 
-    # Extrai o primeiro número encontrado no nome da branch.
-    # head -1 → garante só um resultado, caso haja mais de um número na branch
-    NUM=$(echo "$BRANCH" | grep -oE '[0-9]+' | head -1)
+    # Para evitar duplicação caso já tenha sido digitado manualmente (case-insensitive)
+    if [ -n "$NUMERO" ] && ! grep -qi "refs #$NUMERO" "$ARQUIVO_MENSAGEM"; then
 
-    # só prossegue se essa referência AINDA NÃO estiver no arquivo
-    # (evita duplicar caso já tenha sido digitado manualmente)
-    if [ -n "$NUM" ] && ! grep -q "Refs #$NUM" "$COMMIT_MSG_FILE"; then
-
-        printf "\nRefs #%s\n" "$NUM" >> "$COMMIT_MSG_FILE"
+        printf "\nrefs #%s\n" "$NUMERO" >> "$ARQUIVO_MENSAGEM"
     fi
 fi
-
