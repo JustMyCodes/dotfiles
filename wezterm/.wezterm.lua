@@ -59,9 +59,9 @@ config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }     -- Desabilita le
 -- Teclas ---------------------------------------------------------------
 config.keys = {
     -- Rolar 1 linha para cima com SHIFT + Seta para cima
-    { key = 'UpArrow', mods = 'ALT', action = act.ScrollByLine(-1) },
+    { key = 'UpArrow', mods = 'ALT', action = act.SendKey { key = 'UpArrow', mods = 'ALT' } },
     -- Rolar 1 linha para baixo com SHIFT + Seta para baixo
-    { key = 'DownArrow', mods = 'ALT', action = act.ScrollByLine(1) },
+    { key = 'DownArrow', mods = 'ALT', action = act.SendKey { key = 'DownArrow', mods = 'ALT' } },
 }
 
 
