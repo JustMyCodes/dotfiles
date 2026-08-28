@@ -113,3 +113,20 @@ Começar do zero (mata o servidor e limpa os sockets)
 tmux kill-server && rm -rf /tmp/tmux-*
 ```
 
+## Auto-start do tmux
+
+Para que o tmux inicie automaticamente ao se abrir um shell, adicione o código abaixo no arquivo `.bashrc`.
+Isso força o bash a sempre iniciar (ou reconecta a) uma sessão de tmux chamada `MAIN`.
+
+```bash
+# Força a inicialização do tmux automaticamente caso esteja instalado
+if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [[ $- == *i* ]]; then
+    tmux new-session -A -s MAIN
+fi
+```
+
+- `command -v tmux` — só ativa se o tmux estiver instalado na máquina.
+- `[ -z "$TMUX" ]` — evita iniciar um tmux dentro de outro, caso o shell já esteja dentro de uma sessão.
+- `[[ $- == *i* ]]` — restringe a shells interativos, para não interferir em scripts ou conexões não interativas (ex.: `scp`, `rsync` via SSH).
+- `new-session -A -s MAIN` — reconecta à sessão `MAIN` se ela já existir, ou cria uma nova.
+
