@@ -68,6 +68,7 @@ gunzip ts.gz
 chmod +x ts
 mkdir -p ~/.local/bin
 mv ts ~/.local/bin/tree-sitter
+echo '# ~/.local/bin: binários instalados manualmente (ex: tree-sitter)' >> ~/.bashrc
 echo 'export PATH=~/.local/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 tree-sitter --version   # confirma instalação
