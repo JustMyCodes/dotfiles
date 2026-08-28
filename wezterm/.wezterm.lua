@@ -27,22 +27,48 @@ config.color_scheme = 'Navy and Ivory (terminal.sexy)'
 config.colors = {
   background = '0f1520'
 }
---config.initial_cols = 120                           -- Configura o tamanho inicial da janela
---config.initial_rows = 28
-config.enable_tab_bar = false                       -- Remove a barra de abas para visual mais limpo
-config.window_decorations = 'NONE'                  -- Usar NONE ou RESIZE para desativar a barra de título
+config.initial_cols = 120           -- Configura o tamanho inicial da janela
+config.initial_rows = 28
+config.enable_tab_bar = false       -- Remove a barra de abas para visual mais limpo
+config.window_decorations = 'NONE'  -- Usar NONE ou RESIZE para desativar a barra de título
 
 -- Fonte ---------------------------------------------------------------
 config.font = wezterm.font( 'MesloLGM Nerd Font Mono' )
 config.font_size = 13
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }     -- Desabilita legatures da Fonte
 
--- Teclas ---------------------------------------------------------------
+
+-- CONFIGURA ATALHOS
+-- Teclas --------------------------------------------------------------
 config.keys = {
-    -- Rolar 1 linha para cima com SHIFT + Seta para cima
-    { key = 'UpArrow', mods = 'ALT', action = act.SendKey { key = 'UpArrow', mods = 'ALT' } },
-    -- Rolar 1 linha para baixo com SHIFT + Seta para baixo
-    { key = 'DownArrow', mods = 'ALT', action = act.SendKey { key = 'DownArrow', mods = 'ALT' } },
+    -- Alt+Up/Down: rola o WezTerm no shell comum (uso direto do terminal);
+    -- em apps como tmux, o scrollback do WezTerm não reflete a tela real,
+    -- então a tecla é repassada (SendKey) para o app tratar o próprio scroll.
+    {
+        key = 'UpArrow',
+        mods = 'ALT',
+        action = wezterm.action_callback(function(window, pane)
+            if pane:is_alt_screen_active() then
+                window:perform_action(act.SendKey { key = 'UpArrow', mods = 'ALT' }, pane)
+            else
+                -- Rolar 1 linha para cima com ALT + Seta para cima
+                window:perform_action(act.ScrollByLine(-1), pane)
+            end
+        end),
+    },
+
+    {
+        key = 'DownArrow',
+        mods = 'ALT',
+        action = wezterm.action_callback(function(window, pane)
+            if pane:is_alt_screen_active() then
+                window:perform_action(act.SendKey { key = 'DownArrow', mods = 'ALT' }, pane)
+            else
+                -- Rolar 1 linha para baixo com ALT + Seta para baixo
+                window:perform_action(act.ScrollByLine(1), pane)
+            end
+        end),
+    },
 }
 
 
