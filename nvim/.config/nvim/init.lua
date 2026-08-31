@@ -9,6 +9,7 @@ _G.gh = function(repo) return 'https://github.com/' .. repo end
 
 require 'plugins.neo-tree'
 require 'themes.nord'
+require 'plugins.markview'
 
 -- ============================================================
 -- SEÇÃO 2: KEYMAPS

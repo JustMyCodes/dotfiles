@@ -16,7 +16,8 @@ nvim/
 │   ├── theme/
 │   └── utils/
 ├── after/
-└── snippets/
+├── snippets/
+└── spell/
 ```
 
 | Caminho | Finalidade |
@@ -28,6 +29,7 @@ nvim/
 | `lua/utils/` | Funções auxiliares reutilizadas em diferentes partes da configuração. |
 | `after/` | Arquivos carregados após a configuração principal. |
 | `snippets/` | Snippets personalizados. |
+| `spell/` | Dicionários de português; Útil para markdown. |
 
 ## Requisitos
 
@@ -77,5 +79,42 @@ tree-sitter --version   # confirma instalação
 Reabra o Neovim e rode `:TSInstall` (ou deixe recompilar automaticamente).
 
 > Como isso se repete a cada nova máquina WSL, considere automatizar esses passos num script `install.sh` no repositório de dotfiles, em vez de repetir manualmente.
+
+</details>
+
+<details>
+<summary>Adicionar outro idioma ao corretor ortográfico</summary>
+
+O Neovim traz apenas o inglês embutido. Os demais idiomas são arquivos `.spl`
+que precisam estar em `spell/` dentro do `runtimepath` — aqui, versionados em
+`nvim/.config/nvim/spell/`.
+
+Atenção ao código: o `spelllang` aceita região (`pt_br`, `en_gb`), mas o arquivo
+é por **idioma** (`pt`, `en`). As regiões vivem dentro do mesmo `.spl`.
+
+```bash
+cd ~/.dotfiles/nvim/.config/nvim/spell
+curl -LO https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.spl
+curl -LO https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.sug   # opcional
+ls -lh
+```
+
+Verifique o tamanho dos arquivos: o `.spl` tem alguns MB. Poucos KB significa que o proxy
+devolveu uma página de erro no lugar do dicionário — nesse caso, baixe pelo
+navegador e copie o arquivo para o diretório.
+
+O `.sug` só melhora as sugestões do `z=`; sem ele o corretor funciona igual.
+
+Depois, acrescente o idioma ao `spelllang` em `nvim/.config/nvim/after/ftplugin/markdown.lua`:
+
+```lua
+vim.opt_local.spelllang = 'pt_br,en,es'
+```
+
+Reabra o arquivo e confirme com `:set spelllang?` — sem aviso na abertura.
+
+Por fim, commite o `.spl` junto com a alteração do `ftplugin`. Os dois andam
+juntos: dicionário sem entrada no `spelllang` não é usado, e entrada sem
+dicionário volta a gerar o aviso na próxima máquina.
 
 </details>
