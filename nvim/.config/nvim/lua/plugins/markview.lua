@@ -22,5 +22,5 @@ require('markview').setup({
 
 vim.keymap.set('n', '<leader>md', '<cmd>Markview toggle<cr>',
     { desc = 'Alterna preview de markdown (buffer)' })
-vim.keymap.set('n', '<leader>mv', '<cmd>Markview splitToggle<cr>',
+vim.keymap.set('n', '<leader>ms', '<cmd>Markview splitToggle<cr>',
     { desc = 'Alterna splitview de markdown' })

@@ -1,3 +1,15 @@
+-- Necessário porque markdown-preview faz build com o autocmd PackChanged
+-- que precisa existir antes do vim.pack.add instalar o plugin
+vim.api.nvim_create_autocmd('PackChanged', {
+    callback = function(ev)
+        local name, kind = ev.data.spec.name, ev.data.kind
+        if name == 'markdown-preview.nvim' and (kind == 'install' or kind == 'update') then
+            if not ev.data.active then vim.cmd.packadd('markdown-preview.nvim') end
+            vim.fn['mkdp#util#install']()
+        end
+    end,
+})
+
 require 'config.options'
 require 'config.keymaps'
 
@@ -10,6 +22,7 @@ _G.gh = function(repo) return 'https://github.com/' .. repo end
 require 'plugins.neo-tree'
 require 'themes.nord'
 require 'plugins.markview'
+require 'plugins.markdown-preview'
 
 -- ============================================================
 -- SEÇÃO 2: KEYMAPS
