@@ -119,12 +119,16 @@ Para que o tmux inicie automaticamente ao se abrir um shell, adicione o código 
 Isso força o bash a sempre iniciar (ou reconecta a) uma sessão de tmux chamada `MAIN`.
 
 ```bash
-# Força a inicialização do tmux automaticamente caso esteja instalado
-if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [[ $- == *i* ]]; then
+# Força inicialização automática do tmux caso esteja instalado
+# E evita iniciá-lo dentro de outro tmux ou dentro de IDEs como JetBrains ou VSCode
+if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [[ $- == *i* ]] \
+   && [[ "$TERMINAL_EMULATOR" != *JetBrains* ]] \
+   && [ "$TERM_PROGRAM" != "vscode" ] && [ -z "$VSCODE_PID" ]; then
     tmux new-session -A -s MAIN
 fi
 ```
 
+```
 - `command -v tmux` — só ativa se o tmux estiver instalado na máquina.
 - `[ -z "$TMUX" ]` — evita iniciar um tmux dentro de outro, caso o shell já esteja dentro de uma sessão.
 - `[[ $- == *i* ]]` — restringe a shells interativos, para não interferir em scripts ou conexões não interativas (ex.: `scp`, `rsync` via SSH).
