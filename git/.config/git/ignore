@@ -1,0 +1,48 @@
+# ~/.config/git/ignore — ignore global, vale para todos os repositórios
+# desta máquina e não é visto por mais ninguém.
+#
+# Aqui entra só o ruído do MEU ambiente: IDE, sistema, ferramentas e
+# arquivos locais com credenciais. Regra que interessa ao time vai no
+# .gitignore do repositório.
+#
+# Padrão com "/" é ancorado na raiz do repositório; sem "/", casa o nome
+# em qualquer nível. Conferir com: git check-ignore -v <arquivo>
+
+# ─── IDEs e editores ─────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+.netrwhist
+
+# ─── Sistema ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Claude Code ─────────────────────────────────────────────────────
+# Só o que é local. O resto do .claude/ (settings.json, commands/,
+# agents/, skills/) costuma ser versionado pelo time.
+# Com "/" no meio, o padrão fica ancorado; o "**/" libera qualquer nível.
+**/.claude/settings.local.json
+**/.claude/worktrees/
+
+# ─── SIOP: configuração local do ambiente Java ───────────────────────
+# Credenciais de banco em texto puro; o .gitignore do repositório cobre
+# apenas o ambiente.properties.
+siop-ear/siop.properties
+
+# ─── Segredos ────────────────────────────────────────────────────────
+# Rede de segurança, não proteção: vale só para arquivos dentro de um
+# repositório, não impede `git add -f` e não faz nada pelo que já está
+# rastreado. A proteção real é manter esses arquivos fora dos projetos,
+# com chmod 600 (ex.: ~/.secrets, carregado pelo ~/.bashrc).
+# Sem barra, o padrão casa o nome em qualquer nível.
+.secrets
+.ssh/
+id_rsa*
+id_ed25519*
+*.pem
+*.p12
+.netrc
