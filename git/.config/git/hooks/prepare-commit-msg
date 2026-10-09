@@ -4,6 +4,14 @@
 ARQUIVO_MENSAGEM=$1             # Caminho temporário do arquivo que contém a mensagem de commit
 ORIGEM_MENSAGEM=$2              # "message" (-m/-F), "template", "merge", "squash" ou "commit" (--amend/-c/-C)
 
+# Sugestão gerada pela skill commit (modo Editor): substitui o template uma única vez
+SUGESTAO=$(git rev-parse --git-path COMMIT_SUGGESTION)
+if { [ "$ORIGEM_MENSAGEM" = "template" ] || [ -z "$ORIGEM_MENSAGEM" ]; } && [ -f "$SUGESTAO" ]; then
+    cat "$SUGESTAO" > "$ARQUIVO_MENSAGEM"
+    rm -f "$SUGESTAO"
+    ORIGEM_MENSAGEM="message"
+fi
+
 if [ "$ORIGEM_MENSAGEM" = "message" ] || [ "$ORIGEM_MENSAGEM" = "template" ]; then
 
     BRANCH=$(git rev-parse --abbrev-ref HEAD)
