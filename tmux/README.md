@@ -120,15 +120,16 @@ Isso força o bash a sempre iniciar (ou reconecta a) uma sessão de tmux chamada
 
 ```bash
 # Força inicialização automática do tmux caso esteja instalado
-# E evita iniciá-lo dentro de outro tmux ou dentro de IDEs como JetBrains ou VSCode
+# Evita iniciá-lo dentro de outro tmux, de IDEs (JetBrains, VSCode)
+# e de shells disparados com "bash -c" (ex.: ijent do IntelliJ lendo o ambiente)
 if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [[ $- == *i* ]] \
+   && [ -z "$BASH_EXECUTION_STRING" ] \
    && [[ "$TERMINAL_EMULATOR" != *JetBrains* ]] \
    && [ "$TERM_PROGRAM" != "vscode" ] && [ -z "$VSCODE_PID" ]; then
     tmux new-session -A -s MAIN
 fi
 ```
 
-```
 - `command -v tmux` — só ativa se o tmux estiver instalado na máquina.
 - `[ -z "$TMUX" ]` — evita iniciar um tmux dentro de outro, caso o shell já esteja dentro de uma sessão.
 - `[[ $- == *i* ]]` — restringe a shells interativos, para não interferir em scripts ou conexões não interativas (ex.: `scp`, `rsync` via SSH).
