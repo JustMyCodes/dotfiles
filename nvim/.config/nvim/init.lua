@@ -19,10 +19,13 @@ require 'config.keymaps'
 ---@return string
 _G.gh = function(repo) return 'https://github.com/' .. repo end
 
+vim.env.LANG = 'pt_BR.UTF-8' -- Ajuda Copilot a responder em português
+
 require 'plugins.neo-tree'
 require 'themes.nord'
 require 'plugins.markview'
 require 'plugins.markdown-preview'
+require 'plugins.copilot'
 
 -- ============================================================
 -- SEÇÃO 2: KEYMAPS
