@@ -33,7 +33,7 @@ Qualquer combinação de:
    | ENTREGA | "terminei", "concluído", "fechar a issue", PR mergeado, certificado obtido, critérios atendidos | Nota de Entrega |
 
    Se o contexto indicar mais de um tipo para a mesma issue, gere uma nota por tipo, na ordem cronológica. Se for ambíguo entre PROGRESSO e ENTREGA, pergunte ao usuário com a ferramenta de perguntas — não adivinhe.
-3. **Extrair fatos**: resultado obtido, próximo passo, bloqueio (e de quem depende), referências (issues, merge request ou commit da entrega), desdobramentos, decisões técnicas (e quem decidiu).
+3. **Extrair fatos**: resultado obtido, próximo passo, bloqueios (e de quem dependem), referências (issues, merge request ou commit da entrega), desdobramentos, decisões técnicas (e quem decidiu).
 4. **Redigir** conforme o modelo do tipo, aplicando as regras abaixo.
 5. **Revisar** com a lista de verificação final.
 
@@ -42,13 +42,13 @@ Qualquer combinação de:
 ### Nota de Progresso
 
 - Registrar **somente quando houver avanço real**. Se o contexto não mostrar avanço, avise o usuário em vez de produzir uma nota vazia.
-- **Feitos** (primeira linha, **sem rótulo**): parágrafo único com o que avançou, numerado conforme Numeração de itens. Resultado e não esforço ("Validação de CPF implementada", nunca "Trabalhei na validação"). Quando pertinente, incluir o avanço nos critérios de aceite (ex.: "CA01–CA03 atendidos, CA04 pendente"), sem marcar como atendido o que o contexto não confirma.
-- **Próximo:** parágrafo único, passos concretos e acionáveis, numerados conforme Numeração de itens.
-- **Bloqueio:** só se existir; dizer o que impede e de quem/que depende.
+- **Feitos** (primeira linha, **sem rótulo**): parágrafo único com o que avançou, numerado conforme Primeira linha. Resultado e não esforço ("Validação de CPF implementada", nunca "Trabalhei na validação"). Quando pertinente, incluir o avanço nos critérios de aceite (ex.: "CA01–CA03 atendidos, CA04 pendente"), sem marcar como atendido o que o contexto não confirma.
+- **Bloqueios:** só se existir; lista de tarefas conforme Campos com rótulo. Dizer o que impede e de quem/que depende.
   - **Bloqueio externo** (outra equipe, pessoa, fornecedor, acesso, aprovação): incluir quem, desde quando (`desde dd/mm/aaaa`) e o impacto (ex.: "impacta o prazo"). Se a data de início não estiver no contexto, usar `(preencher: desde quando)`.
   - **Bloqueio pessoal** (dificuldade técnica, curva de aprendizado, dúvida em estudo): descrever sem data e sem impacto.
-  - Omitir a linha se não houver bloqueio.
-- **Decisões** não têm rótulo próprio: quando houver, incorporar ao campo pertinente — nos feitos se a decisão é parte do avanço, em Próximo se define o passo seguinte — indicando quem decidiu (ex.: "**Próximo:** Implementar fila assíncrona, definida com *Fulano* na revisão de arquitetura.").
+  - Omitir o campo se não houver bloqueio.
+- **Próximo:** lista de tarefas conforme Campos com rótulo, com passos concretos e acionáveis.
+- **Decisões** não têm rótulo próprio: quando houver, incorporar ao campo pertinente — nos feitos se a decisão é parte do avanço, em Próximo se define o passo seguinte — indicando quem decidiu (ex.: "- [ ] Implementar fila assíncrona, definida com *Fulano* na revisão de arquitetura.").
 - Nunca reescrever nota antiga: se algo mudou, a nova nota registra a mudança.
 
 ### Nota de Ocorrência
@@ -62,12 +62,12 @@ Qualquer combinação de:
 ### Nota de Entrega
 
 - É a última nota do item.
-- **Entregas** (primeira linha, **sem rótulo**): parágrafo único com a confirmação objetiva do que foi entregue, numerado conforme Numeração de itens. Quando pertinente, citar os critérios de aceite atendidos; não declarar atendido o que o contexto não confirma. Se a entrega for um merge request ou commit, mencioná-lo aqui com o repositório (ex.: "merge request cadastro-fornecedores!87 integrado à `main`").
+- **Entregas** (primeira linha, **sem rótulo**): parágrafo único com a confirmação objetiva do que foi entregue, numerado conforme Primeira linha. Quando pertinente, citar os critérios de aceite atendidos; não declarar atendido o que o contexto não confirma. Se a entrega for um merge request ou commit, mencioná-lo aqui com o repositório (ex.: "merge request cadastro-fornecedores!87 integrado à `main`").
 - **Desdobramento:** somente se houver algo que pode ser tratado separadamente, em outro momento, sem impedir o fechamento do item:
   - **Pendência:** o que ficou fora do entregue (ajuste, melhoria, critério não atendido e renegociado).
   - **Descoberta:** algo identificado durante o trabalho e que merece atenção própria (bug em outra parte do sistema, dívida técnica, oportunidade de melhoria, tema para estudo).
 
-  Cada item é descrito em poucas palavras e vira uma issue nova, citada pelo número; se ainda não foi criada, usar `(preencher: issue)`. Com mais de um item, numerar conforme Numeração de itens. A issue atual fecha sem pendência aberta. Omitir se não houver.
+  Cada item é descrito em poucas palavras e vira uma issue nova, citada pelo número; se ainda não foi criada, usar `(preencher: issue)`. Lista de tarefas conforme Campos com rótulo. A issue atual fecha sem pendência aberta. Omitir se não houver.
 
 ## Formato de entrega
 
@@ -94,28 +94,34 @@ Qualquer combinação de:
 ## Regras de formatação
 
 - **Primeira linha previsível**: Progresso começa direto pelos feitos e Entrega direto pelas entregas, ambos sem rótulo; Ocorrência pelo nome do evento.
-- **Ordem fixa dos campos** — Progresso: feitos (sem rótulo), Próximo, Bloqueio. Entrega: entregas (sem rótulo), Desdobramento. Campos opcionais ausentes são omitidos sem alterar a ordem dos demais.
-- Rótulos em negrito seguidos de dois-pontos na mesma linha (`**Próximo:** ...`).
+- **Ordem fixa dos campos** — Progresso: feitos (sem rótulo), Bloqueios, Próximo. Entrega: entregas (sem rótulo), Desdobramento. Campos opcionais ausentes são omitidos sem alterar a ordem dos demais.
+- Campos separados por **uma linha em branco**. Nunca use `\` nem dois espaços no fim da linha.
 
-### Numeração de itens
+### Primeira linha (feitos e entregas)
 
-Vale para a primeira linha sem rótulo (feitos e entregas) e para os campos com rótulo (Próximo, Bloqueio, Desdobramento). Não se aplica à Nota de Ocorrência.
+Parágrafo único, sem rótulo. Não se aplica à Nota de Ocorrência.
 
-- Cada campo é **um parágrafo único** (uma linha), nunca lista com marcadores.
-- **Mais de um item:** cada item começa com o número em negrito entre colchetes, `**[1]**`, `**[2]**`..., recomeçando em `[1]` a cada campo. Itens separados por `; ` e o último terminado com `.`.
+- **Mais de um item:** cada item começa com o número em negrito entre colchetes, `**[1]**`, `**[2]**`... Itens separados por `; ` e o último terminado com `.`.
 - **Um item só:** sem numeração; o texto termina com `.`.
-- O texto de cada item (e de cada campo) começa com **letra maiúscula**, inclusive logo após o rótulo ou o número.
+
+### Campos com rótulo (Bloqueios, Próximo, Desdobramento)
+
+- Rótulo em negrito com dois-pontos, sozinho na linha (`**Próximo:**`), seguido de uma linha em branco e de uma **lista de tarefas** (`- [ ] `), um item por linha, mesmo com um item só.
+- Itens terminados com `;`, exceto o último, terminado com `.`.
+- Sem numeração `**[n]**` nos itens da lista.
+
+### Regras comuns
+
+- O texto de cada item começa com **letra maiúscula**, inclusive logo após o número ou o `- [ ] `.
 
 ```markdown
-**[1]** Capítulos 1 e 2 de *Linux Basics for Hackers* concluídos; **[2]** Síntese iniciada na wiki.\
-**Próximo:** **[1]** Continuar a partir do capítulo 3; **[2]** Publicar a síntese.
-```
+**[1]** Capítulos 1 e 2 de *Linux Basics for Hackers* concluídos; **[2]** Síntese iniciada na wiki.
 
-```markdown
-Capítulos 1 e 2 de *Linux Basics for Hackers* concluídos.\
-**Próximo:** Continuar a partir do capítulo 3.
+**Próximo:**
+
+- [ ] Continuar a partir do capítulo 3;
+- [ ] Publicar a síntese.
 ```
-- Linhas consecutivas da mesma nota terminam com `\` para forçar quebra, exceto a última. Nunca use dois espaços no fim da linha.
 - Os colchetes `[...]` do template são placeholders: não deixe colchetes de template nem textos de exemplo na saída (colchetes que fazem parte de um título real são mantidos).
 - Não use HTML.
 
@@ -124,7 +130,8 @@ Capítulos 1 e 2 de *Linux Basics for Hackers* concluídos.\
 | Elemento | Formato | Exemplo |
 |----------|---------|---------|
 | Rótulo de campo | negrito | `**Próximo:**` |
-| Número de item | negrito, entre colchetes | `**[1]**` |
+| Número de item (primeira linha) | negrito, entre colchetes | `**[1]**` |
+| Item de campo com rótulo | lista de tarefas | `- [ ] Publicar a síntese.` |
 | Nome de arquivo, pasta ou caminho | código | `` `docs/validacoes.md` `` |
 | Comando, função, classe, variável, trecho de código | código | `` `git rebase` ``, `` `validarCpf()` `` |
 | Branch, tag, versão | código | `` `main` ``, `` `v1.4.0` `` |
@@ -150,15 +157,16 @@ Capítulos 1 e 2 de *Linux Basics for Hackers* concluídos.\
 
 - **Não inventar fatos**: datas, horários, números de issue, links, nomes e resultados ausentes no contexto não aparecem. Dado necessário e ausente vira marcador `(preencher: ...)`; dado inferido recebe `(confirmar)`.
 - **Resultado, não esforço**: evitar "trabalhei", "estive vendo", "dediquei X horas".
-- **Brevidade**: um parágrafo por campo; a nota inteira deve ser lida em poucos segundos.
+- **Brevidade**: itens curtos; a nota inteira deve ser lida em poucos segundos.
 - **Linguagem objetiva e impessoal**, em português, verbos no particípio ("implementada", "corrigido", "definido").
 - **Rastreabilidade**: entregas de código citam o merge request ou commit com o repositório; toda decisão registra quem decidiu.
 
 ## Lista de verificação final
 
 - [ ] O tipo da nota corresponde ao contexto (ou o usuário confirmou).
-- [ ] Progresso: há avanço real; feitos na primeira linha, sem rótulo; Próximo em uma linha; campos opcionais omitidos se vazios; ordem fixa respeitada.
-- [ ] Numeração: `**[n]**` só com mais de um item; itens separados por `; `; cada campo termina com `.`; texto começa com maiúscula.
+- [ ] Progresso: há avanço real; feitos na primeira linha, sem rótulo; ordem feitos, Bloqueios, Próximo; campos opcionais omitidos se vazios.
+- [ ] Primeira linha: `**[n]**` só com mais de um item; itens separados por `; `; termina com `.`.
+- [ ] Campos com rótulo: rótulo sozinho na linha, linha em branco, lista `- [ ] `; itens com `;` e o último com `.`; texto começa com maiúscula.
 - [ ] Bloqueio externo tem quem, `desde` e impacto; bloqueio pessoal não tem data.
 - [ ] Ocorrência: sem rótulos; evento na primeira linha; desdobramento iniciado por `> ` apenas se existir.
 - [ ] Entrega: entregas na primeira linha, sem rótulo; não afirma nada que o contexto não confirme; cita o merge request ou commit quando for a entrega; pendências e descobertas a tratar separadamente viraram Desdobramento com issue.
@@ -169,4 +177,4 @@ Capítulos 1 e 2 de *Linux Basics for Hackers* concluídos.\
 - [ ] Nenhum dado foi inventado; inferências marcadas com `(confirmar)` na própria nota.
 - [ ] A saída é só o bloco (ou os blocos), sem texto antes ou depois.
 - [ ] Destaques conforme a tabela: código para arquivos, comandos, SHAs, branches e ferramentas; itálico para títulos de issue, livro, curso e documento; `#n` sem formatação.
-- [ ] Linhas da mesma nota terminam com `\`, exceto a última; sem placeholders `[...]`.
+- [ ] Campos separados por linha em branco; nenhuma linha termina com `\`; sem placeholders `[...]`.
