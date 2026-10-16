@@ -1,11 +1,11 @@
 ; ============================================================
 ;  Áreas de trabalho estilo GNOME/Linux (AutoHotkey v2)
 ;  Funções:
-;    1) Ctrl+Shift+Alt+Seta       -> move a JANELA ativa para a área vizinha (+ segue)
-;    2) Criação dinâmica          -> uma nova área é criada sob demanda
-;    3) Win+Alt+Seta              -> navega entre as áreas (estilo Linux);
+;    1) Ctrl+Shift+Alt+Seta   -> move a JANELA ativa para a área vizinha (+ segue)
+;    2) Criação dinâmica        -> uma nova área é criada sob demanda
+;    3) Win+Alt+Seta            -> navega entre as áreas (estilo Linux);
 ;                                  na ÚLTIMA área, seta p/ direita CRIA uma nova.
-;    4) Remoção dinâmica          -> ao SAIR de uma área VAZIA, ela é excluída.
+;    4) Remoção dinâmica         -> ao SAIR de uma área VAZIA, ela é excluída.
 ;    5) Foco no monitor principal -> ao navegar, a janela inicialmente focada
 ;                                   é a do MONITOR PRINCIPAL (se existir).
 ;    * Novas áreas são nomeadas automaticamente como "WORKSPACE N" (N = número 1-based).
@@ -15,7 +15,10 @@
 ;  Requisito: VirtualDesktopAccessor.dll ao lado deste script
 ;             (ou em %USERPROFILE%\.config\yasb\)
 ;  Use AutoHotkey v2 de 64 bits com a DLL de 64 bits.
-
+;
+;  Observação: este script escuta Win+Alt+Seta diretamente (estilo Linux).
+;  O remap do PowerToys (Win+Alt -> Win+Ctrl) NÃO é mais necessário; pode ser
+;  DESATIVADO no Keyboard Manager.
 ; ============================================================
 #Requires AutoHotkey v2.0
 #SingleInstance Force
@@ -29,6 +32,7 @@ kNamePrefix      := "WORKSPACE "   ; novas áreas recebem  <prefixo><N>  ex.: "W
 kAntiFlash       := true           ; true = cancela o piscar dos ícones após trocar de área
 kAutoRemoveEmpty := true           ; true = ao sair de uma área VAZIA, exclui-a
 kFocusPrimaryMonitor := true       ; true = ao navegar, foca a janela do MONITOR PRINCIPAL da área de destino
+global gOriginDesktop := -1        ; área de onde partiu ao ir para a primeira (-1 = nenhuma)
 
 ; ------------------------------------------------------------
 ; Carrega a VirtualDesktopAccessor.dll
@@ -408,6 +412,45 @@ SwitchDesktop(dir) {
     }
 }
 
+; (4) Win+Alt+1..5 -> vai direto para a área N (1-based).
+;     Se a área não existir, não faz nada (não cria áreas).
+;     Ao sair, aplica a mesma remoção dinâmica da área vazia de origem.
+GoToDesktopByNumber(n) {
+    count := GetDesktopCount()
+    curr  := GetCurrentDesktopNumber()    ; 0-based
+    target := n - 1                       ; converte para 0-based
+    if (target >= count || target = curr)
+        return
+    GoToDesktopSilently(target, curr)
+}
+
+; (5) Win+Alt+Seta baixo -> vai para a primeira área, guardando a de origem
+GoToFirstDesktop() {
+    global gOriginDesktop
+    curr := GetCurrentDesktopNumber()    ; 0-based
+    if (curr = 0)
+        return
+    ; Se a origem for vazia, ela será removida ao sair; nesse caso não há para onde voltar.
+    gOriginDesktop := (CountWindowsOnDesktop(curr) = 0) ? -1 : curr
+    GoToDesktopSilently(0, curr)
+}
+
+; (5b) Win+Alt+Seta cima -> volta para a área de origem (a de onde partiu para a primeira)
+GoBackToOrigin() {
+    global gOriginDesktop
+    if (gOriginDesktop < 0)
+        return
+    curr   := GetCurrentDesktopNumber()
+    target := gOriginDesktop
+    if (target >= GetDesktopCount() || target = curr) {
+        gOriginDesktop := -1
+        return
+    }
+    ; Guarda a área atual como nova origem, para que "seta baixo" depois volte para cá
+    gOriginDesktop := (CountWindowsOnDesktop(curr) = 0) ? -1 : curr
+    GoToDesktopSilently(target, curr)
+}
+
 ; ------------------------------------------------------------
 ; Atalhos   ( ^ Ctrl   + Shift   ! Alt   # Win )
 ; ------------------------------------------------------------
@@ -418,5 +461,21 @@ SwitchDesktop(dir) {
 ^+!Down::MoveActiveNeighbor(1)
 
 ; (3) Win+Alt+Seta -> navega entre as áreas (estilo Linux); direita no fim cria uma nova.
+;     O AHK escuta Win+Alt diretamente: NÃO é necessário o remap do PowerToys.
 #!Left::SwitchDesktop(-1)
 #!Right::SwitchDesktop(1)
+
+; (4) Win+Alt+número -> áreas 1 a 9
+#!1::GoToDesktopByNumber(1)
+#!2::GoToDesktopByNumber(2)
+#!3::GoToDesktopByNumber(3)
+#!4::GoToDesktopByNumber(4)
+#!5::GoToDesktopByNumber(5)
+#!6::GoToDesktopByNumber(6)
+#!7::GoToDesktopByNumber(7)
+#!8::GoToDesktopByNumber(8)
+#!9::GoToDesktopByNumber(9)
+
+; Win+Alt+Seta cima -> área anterior; Win+Alt+Seta baixo -> primeira área
+#!Up::GoBackToOrigin()
+#!Down::GoToFirstDesktop()
