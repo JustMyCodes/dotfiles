@@ -28,13 +28,10 @@ vim.opt_local.expandtab = true
 vim.opt_local.spell = true
 vim.opt_local.spelllang = 'pt_br,en'
 
--- O markview recomenda nowrap
-vim.opt_local.wrap = false
-
 -- As guias em 72/80/120 marcam limite de linha de CÓDIGO.
 -- Em texto corrido não tem significado nenhum.
 vim.opt_local.colorcolumn = ''
 
 -- Desfaz o que este arquivo fez, caso o filetype do buffer mude.
 -- O `<` restaura o valor global de cada opção.
-vim.b.undo_ftplugin = 'setlocal expandtab< spell< spelllang< wrap< colorcolumn<'
+vim.b.undo_ftplugin = 'setlocal expandtab< spell< spelllang< colorcolumn<'
