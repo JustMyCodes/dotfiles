@@ -34,45 +34,8 @@ config.window_decorations = 'NONE'  -- Usar NONE ou RESIZE para desativar a barr
 
 -- Fonte ---------------------------------------------------------------
 config.font = wezterm.font( 'MesloLGM Nerd Font Mono' )
-config.font_size = 11
+config.font_size = 13
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }     -- Desabilita legatures da Fonte
-config.adjust_window_size_when_changing_font_size = false         -- Mantém o tamanho da janela ao trocar a fonte
-
--- Fonte por resolução ------------------------------------------------
--- Ajusta o tamanho da fonte conforme a tela em que a janela está.
--- Usa o menor lado da tela (em pixels) para valer em modo retrato ou paisagem.
--- Faixas avaliadas em ordem: a primeira com min_side <= max vence.
-local font_size_by_screen = {
-    { max = 1080, size = 9 },   -- ex.: 1920x1080 / 1080x1920
-}
-
-local function font_size_for(screen)
-    local min_side = math.min( screen.width, screen.height )
-    for _, rule in ipairs( font_size_by_screen ) do
-        if min_side <= rule.max then
-            return rule.size
-        end
-    end
-    return config.font_size
-end
-
-local function apply_font_size(window)
-    local screen = wezterm.gui.screens().active
-    if not screen then return end
-
-    local size = font_size_for( screen )
-    local overrides = window:get_config_overrides() or {}
-    -- Só aplica se mudou, evitando loop (a troca de fonte dispara novos eventos)
-    if overrides.font_size ~= size then
-        overrides.font_size = size
-        window:set_config_overrides( overrides )
-    end
-end
-
--- Mudar de monitor altera o DPI/tamanho e dispara window-resized
-wezterm.on( 'window-resized', function(window, _) apply_font_size( window ) end )
--- Disparado ao abrir a janela e ao recarregar a configuração
-wezterm.on( 'window-config-reloaded', function(window, _) apply_font_size( window ) end )
 
 
 -- CONFIGURA ATALHOS
