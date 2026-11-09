@@ -1,0 +1,41 @@
+# Este repositório é público: nada que identifique ou autentique entra aqui.
+.secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+id_rsa*
+id_ed25519*
+.netrc
+.npmrc
+.pgpass
+*credentials*
+**/.config/git/credentials
+**/.claude/settings.local.json
+**/.claude/.credentials.json
+
+# Configuração que só vale para uma máquina.
+*.local
+*.local.*
+local.conf
+
+# Estado local de ferramentas, gerado na máquina e sem valor no repositório.
+**/.config/nvim/lazy-lock.json.bak
+**/.config/nvim/.netrwhist
+**/.claude/projects/
+**/.claude/todos/
+**/.claude/shell-snapshots/
+**/.claude/history.jsonl
+
+# Artefatos do Stow (ex.: conflitos renomeados durante o stow).
+*.stow-orig
+*.stow-backup
+
+# Editores e SO.
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
