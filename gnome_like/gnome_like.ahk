@@ -32,13 +32,6 @@ kNamePrefix      := "WORKSPACE "   ; novas áreas recebem  <prefixo><N>  ex.: "W
 kAntiFlash       := true           ; true = cancela o piscar dos ícones após trocar de área
 kAutoRemoveEmpty := true           ; true = ao sair de uma área VAZIA, exclui-a
 kFocusPrimaryMonitor := true       ; true = ao navegar, foca a janela do MONITOR PRINCIPAL da área de destino
-global gOriginDesktop := -1        ; área de onde partiu ao ir para a primeira (-1 = nenhuma)
-
-global gChatExes         := ["claude.exe", "Obsidian.exe", "Copilot.exe"]   ; ajuste conforme o Window Spy (ahk_exe)
-global gChatPanelRatio   := 0.33                                            ; largura do painel (~1/3 da tela, 851 px no seu setup)
-
-global gChatRects := Map()   ; hwnd -> último estado conhecido (posição do painel ou tela cheia)
-global gChatInPanel := Map()   ; hwnd -> true se a janela está atualmente no painel (não maximizada)
 
 ; ------------------------------------------------------------
 ; Carrega a VirtualDesktopAccessor.dll
@@ -282,17 +275,7 @@ GoToDesktopSilently(to, from := -1) {
             removeFrom := true
     }
 
-    ; Área 1: maximiza o chat ANTES de trocar, para a área já aparecer com ele em tela cheia
-    if (to = 0)
-        ApplyChatLayout(0)
-
     GoToDesktopNumber(to)
-
-    SetTimer(ApplyChatLayout, -150)   ; espera a troca de área terminar antes de redimensionar
-
-    ; traz o chat para frente na área 1 após o foco automático e o ajuste de tamanho
-    SetTimer(ActivateChatOnArea1, -250)
-    SetTimer(ActivateChatOnArea1, -600)   ; segunda passada, para apps mais lentos
 
     ; Remoção/renomeação PRIMEIRO (elas "acordam" a shell/taskbar); a supressão
     ; do flash vem DEPOIS, para a barra de tarefas com auto-hide voltar a ocultar.
@@ -308,15 +291,11 @@ GoToDesktopSilently(to, from := -1) {
     SetTimer(StopFlashingSelectively, -180)
     SetTimer(StopFlashingSelectively, -350)
     ; foca a janela do monitor principal da área de destino (após a transição)
-    ; SetTimer(() => FocusPrimaryMonitorWindow(to), -120)
- 
-    ; foco inicial: na área 1 não mexe (o chat cuida disso); nas demais, janela do monitor principal
-    SetTimer(() => (to = 0 ? ActivateChatOnArea1() : FocusPrimaryMonitorWindow(to)), -120)
+    SetTimer(() => FocusPrimaryMonitorWindow(to), -120)
     ; passes finais: garantem que TODAS as barras (multi-monitor) recolham,
     ; mesmo quando o efeito de acordar chega atrasado
     SetTimer(ForceTaskbarAutoHide, -400)
     SetTimer(ForceTaskbarAutoHide, -700)
-
 }
 
 
@@ -432,7 +411,7 @@ SwitchDesktop(dir) {
     }
 }
 
-; (4) Win+Alt+1..5 -> vai direto para a área N (1-based).
+; (4) Win+Alt+1..9 -> vai direto para a área N (1-based).
 ;     Se a área não existir, não faz nada (não cria áreas).
 ;     Ao sair, aplica a mesma remoção dinâmica da área vazia de origem.
 GoToDesktopByNumber(n) {
@@ -442,110 +421,6 @@ GoToDesktopByNumber(n) {
     if (target >= count || target = curr)
         return
     GoToDesktopSilently(target, curr)
-}
-
-; (5) Win+Alt+Seta baixo -> vai para a primeira área, guardando a de origem
-GoToFirstDesktop() {
-    global gOriginDesktop
-    curr := GetCurrentDesktopNumber()    ; 0-based
-    if (curr = 0)
-        return
-    ; Se a origem for vazia, ela será removida ao sair; nesse caso não há para onde voltar.
-    gOriginDesktop := (CountWindowsOnDesktop(curr) = 0) ? -1 : curr
-    GoToDesktopSilently(0, curr)
-}
-
-; (5b) Win+Alt+Seta cima -> volta para a área de origem (a de onde partiu para a primeira)
-GoBackToOrigin() {
-    global gOriginDesktop
-    if (gOriginDesktop < 0)
-        return
-    curr   := GetCurrentDesktopNumber()
-    target := gOriginDesktop
-    if (target >= GetDesktopCount() || target = curr) {
-        gOriginDesktop := -1
-        return
-    }
-    ; Guarda a área atual como nova origem, para que "seta baixo" depois volte para cá
-    gOriginDesktop := (CountWindowsOnDesktop(curr) = 0) ? -1 : curr
-    GoToDesktopSilently(target, curr)
-}
-
-; Ajusta o chat conforme a área atual (a janela é "em todas as áreas", então não é movida).
-;   Área 1 -> tela cheia.  Demais áreas -> painel lateral direito.
-ApplyChatLayout(target := -1) {
-    global gChatExes, gChatPanelRatio, gChatRects, gChatInPanel
-    curr := (target >= 0) ? target : GetCurrentDesktopNumber()
-    MonitorGetWorkArea(MonitorGetPrimary(), &l, &t, &r, &b)
-    w := Round((r - l) * gChatPanelRatio)
-    for exe in gChatExes {
-        for hwnd in WinGetList("ahk_exe " exe) {
-            try title := WinGetTitle("ahk_id " hwnd)
-            catch
-                continue
-            if (title = "")
-                continue
-
-            ; Se a janela estava no painel, guarda a posição atual antes de mudar.
-            ; Isso captura ajustes manuais feitos no painel.
-            if gChatInPanel.Has(hwnd)
-                SavePanelRect(hwnd)
-
-            if (curr = 0) {
-                ; Área 1: tela cheia
-                WinMaximize("ahk_id " hwnd)
-                if gChatInPanel.Has(hwnd)
-                    gChatInPanel.Delete(hwnd)
-            } else {
-                ; Outra área: restaura o último painel salvo; se não houver, usa o padrão
-                WinRestore("ahk_id " hwnd)
-                if gChatRects.Has(hwnd) {
-                    s := gChatRects[hwnd]
-                    WinMove(s.x, s.y, s.w, s.h, "ahk_id " hwnd)
-                } else {
-                    WinMove(r - w, t, w, b - t, "ahk_id " hwnd)
-                }
-                gChatInPanel[hwnd] := true
-            }
-        }
-    }
-}
-
-; Lê o estado atual da janela (x, y, w, h e se está maximizada)
-ReadChatRect(hwnd) {
-    state := WinGetMinMax("ahk_id " hwnd)
-    WinGetPos(&x, &y, &w, &h, "ahk_id " hwnd)
-    return {x: x, y: y, w: w, h: h, state: state}
-}
-
-; Guarda o estado atual de uma janela que está no painel (área diferente da 1)
-SavePanelRect(hwnd) {
-    global gChatRects
-    if (WinGetMinMax("ahk_id " hwnd) = 1)   ; maximizada: não é um painel, não guarda
-        return
-    gChatRects[hwnd] := ReadChatRect(hwnd)
-}
-
-; Na área 1, só age se o chat não for a janela ativa (evita troca visível).
-ActivateChatOnArea1() {
-    global gChatExes
-    if (GetCurrentDesktopNumber() != 0)
-        return
-    for exe in gChatExes {
-        for hwnd in WinGetList("ahk_exe " exe) {
-            try title := WinGetTitle("ahk_id " hwnd)
-            catch
-                continue
-            if (title = "")
-                continue
-            if (WinActive("ahk_id " hwnd))
-                return                                ; já está em foco: não faz nada
-            if (WinGetMinMax("ahk_id " hwnd) = 1) {
-                WinActivate("ahk_id " hwnd)
-                return
-            }
-        }
-    }
 }
 
 ; ------------------------------------------------------------
@@ -572,7 +447,3 @@ ActivateChatOnArea1() {
 #!7::GoToDesktopByNumber(7)
 #!8::GoToDesktopByNumber(8)
 #!9::GoToDesktopByNumber(9)
-
-; Win+Alt+Seta cima -> área anterior; Win+Alt+Seta baixo -> primeira área
- #!Up::GoBackToOrigin()
- #!Down::GoToFirstDesktop()

@@ -16,8 +16,6 @@ setups **multi-monitor** e foco inicial na janela do **monitor principal** ao na
 | `Win+Alt+←` / `Win+Alt+→` | Navega para a área anterior/próxima (estilo Linux). Na **última** área, `→` **cria** uma nova. |
 | `Ctrl+Shift+Alt+←/→/↑/↓` | Move a **janela ativa** para a área vizinha e segue junto com ela. |
 | `Win+Alt+1` … `Win+Alt+9` | Vai direto para a área de número 1 a 9. Áreas inexistentes são ignoradas. |
-| `Win+Alt+↓` | Vai para a **primeira** área, guardando a área de origem. |
-| `Win+Alt+↑` | Volta para a área de origem (a de onde partiu com `Win+Alt+↓`). |
 
 Comportamentos automáticos:
 
@@ -36,8 +34,6 @@ Comportamentos automáticos:
 - **Foco no monitor principal** — ao entrar numa área, a janela inicialmente focada é a
   mais alta (ordem Z) do **monitor principal**; se não houver nenhuma nele, vale o
   comportamento nativo do Windows.
-  - **Retorno à origem** — `Win+Alt+↓` memoriza a área de onde você saiu. `Win+Alt+↑` volta para
-  ela. Se a origem estiver vazia, ela é removida ao sair e não é guardada.
 
 ## Requisitos
 
