@@ -17,22 +17,25 @@ Configuração centralizada em `~/.config/git/`:
 ~/.config/git/
 ├── gitmessage.txt   # template padrão de mensagem de commit (Conventional Commits)
 └── hooks/
-    └── prepare-commit-msg   # preenche "refs #<NUMERO>" automaticamente
+    └── prepare-commit-msg   # prefixa o assunto com "#<NUMERO>" automaticamente
 ```
 
 - **`gitmessage.txt`**: esqueleto de mensagem seguindo [Conventional Commits](https://www.conventionalcommits.org/),
   com a lista de tipos (`feat`, `fix`, `docs`...) comentada como referência.
+  Os comentários usam `;`, porque o assunto começa com `#` (ver abaixo).
 
 - **`hooks/prepare-commit-msg`**: script executado automaticamente antes de
   finalizar o commit. Ele extrai o número do item de trabalho a partir do nome da
-  branch atual (ex.: `124-descricao-branch`) e adiciona `refs #124` ao final da
-  mensagem.
+  branch atual (ex.: `124-descricao-branch`) e coloca `#124` no início do
+  assunto: `#124 feat(git): descrição`. Se o assunto já começar com uma
+  issue (`#124`, `#200`...), nada é alterado.
 
 ### Configuração
 
 ```bash
 git config --global core.editor "nvim" # altere para seu editor preferido
 git config --global commit.template ~/.config/git/gitmessage.txt
+git config --global core.commentChar ";" # senão o "#<NUMERO>" do assunto vira comentário
 git config --global core.hooksPath ~/.config/git/hooks
 chmod +x ~/.config/git/hooks/prepare-commit-msg
 ```
@@ -40,15 +43,20 @@ chmod +x ~/.config/git/hooks/prepare-commit-msg
 
 #### `git commit`
 Quando você usar apenas `git commit`, o git vai abrir o arquivo `gitmessage.txt` no seu editor de texto padrão;
-- Edite a mensagem de commite e salve;
+- A primeira linha já vem com `#<NUMERO> `; complete com `<tipo>(<escopo>): <descrição>` e salve;
 
 **Obs**
-1. Os comentários (linhas iniciadas com #) são descartados automaticamente pelo git ao finalizar o commit — não é necessário apagá-los manualmente.
-2. Para abortar o commit, basta deixar a mensagem sem nenhum conteúdo além de linhas em branco e comentários (linhas iniciadas com #).
-O git detecta que a mensagem final ficaria vazia e aborta automaticamente, em vez de commitar.
+1. Os comentários (linhas iniciadas com `;`) são descartados automaticamente pelo git ao finalizar o commit — não é necessário apagá-los manualmente.
+2. Para abortar o commit, apague também a linha `#<NUMERO> ` e deixe só linhas em branco e comentários (linhas iniciadas com `;`).
+O git detecta que a mensagem final ficaria vazia e aborta automaticamente, em vez de commitar. Se a linha `#<NUMERO> ` ficar, o commit é criado só com ela.
 
 #### `git commit -m '<MESSAGE>'`
-Com a opção `-m`, o script adiciona `refs #<NUMERO>` no *corpo/footer* da mensagem de commit automaticamente (depois de `<MESSAGE>`). Nenhum editor será aberto.
+Com a opção `-m`, o script coloca `#<NUMERO> ` antes de `<MESSAGE>` automaticamente. Nenhum editor será aberto.
+
+```bash
+git commit -m 'feat(git): prefixa o assunto com a issue'
+# na branch 124-descricao-branch, grava: #124 feat(git): prefixa o assunto com a issue
+```
 
 > Para visualizar os metadados do commite mais recente e como ficou a mensagem completa use:
 > ```git log -1```

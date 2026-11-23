@@ -14,12 +14,26 @@ fi
 
 if [ "$ORIGEM_MENSAGEM" = "message" ] || [ "$ORIGEM_MENSAGEM" = "template" ]; then
 
-    BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    BRANCH=$(git symbolic-ref --short -q HEAD)
     NUMERO=$(echo "$BRANCH" | grep -oE '[0-9]+' | head -1)
+    [ -n "$NUMERO" ] || exit 0
 
-    # Para evitar duplicação caso já tenha sido digitado manualmente (case-insensitive)
-    if [ -n "$NUMERO" ] && ! grep -qi "refs #$NUMERO" "$ARQUIVO_MENSAGEM"; then
+    TEMPORARIO="$ARQUIVO_MENSAGEM.issue"
 
-        printf "\nrefs #%s\n" "$NUMERO" >> "$ARQUIVO_MENSAGEM"
+    if [ "$ORIGEM_MENSAGEM" = "template" ]; then
+        # Editor aberto com o template: deixa "#<NUMERO> " na primeira linha para completar
+        { printf "#%s \n" "$NUMERO"; cat "$ARQUIVO_MENSAGEM"; } > "$TEMPORARIO"
+    else
+        # Mensagem pronta (-m/-F/sugestão): prefixa a primeira linha não vazia,
+        # a menos que ela já comece com uma issue ("#<número>"), mesmo que de outra branch
+        awk -v n="$NUMERO" '
+            !feito && NF {
+                if ($0 !~ /^#[0-9]+([^0-9]|$)/) $0 = "#" n " " $0
+                feito = 1
+            }
+            { print }
+        ' "$ARQUIVO_MENSAGEM" > "$TEMPORARIO"
     fi
+
+    mv "$TEMPORARIO" "$ARQUIVO_MENSAGEM"
 fi
